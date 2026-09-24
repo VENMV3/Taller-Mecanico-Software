@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/mi_base_datos?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Mexico_City}
+    username: ${DB_USER:venmve}
+    password: ${DB_PASSWORD:2411}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties.hibernate.dialect: org.hibernate.dialect.MySQLDialect
+server:
+  port: 8080
+app:
+  jwt-secret: ${JWT_SECRET:QmFja2VuZFRhbGxlclNlY3JldEtleS0yMDI2LXN1cGVyLXNlZ3VyYS0zMi1ieXRlcw}
+  jwt-expiration-ms: 86400000
