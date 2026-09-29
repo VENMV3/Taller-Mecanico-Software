@@ -31,4 +31,16 @@
 
 ## 4. Mejoras de Interfaz
 
-Se conservó la paleta existente: negro `#050505`, panel `#101010`, azul eléctrico `#1677ff`, zinc y texto claro. Se centralizaron tokens de estado para hover, foco, error, éxito y deshabilitado. `frontend/src/main.jsx` ahora presenta Login con jerarquía, carga, foco accesible y contraseña visible opcional; el Registro se agrupó en datos personales, contacto, fotografía y dirección, con vista previa de imagen, ayudas, estados ARIA y confirmación visual de `Cliente Registrado`. `frontend/src/index.css` concentra los estilos responsivos, transiciones menores de 200 ms y la preferencia de movimiento reducido.
+Se conservó la paleta existente: negro `#050505`, panel `#101010`, azul eléctrico `#1677ff`, zinc y texto claro. Se centralizaron tokens de estado para hover, foco, error, éxito y deshabilitado. `frontend/src/main.jsx` incorpora iconos de campo, spinner, botones con degradado azul derivado, panel visual de marca, secciones con iconos, progreso visual y fotografía circular. `frontend/src/index.css` concentra glassmorphism sutil, sombras en capas, layout responsive, transiciones menores de 250 ms y `prefers-reduced-motion`.
+
+## 5. Resultados de Pruebas
+
+| Prueba | Fallo detectado | Corrección | Estado |
+| --- | --- | --- | --- |
+| Build de producción frontend | Ninguno | `npm run build` completó el empaquetado. | Aprobado |
+| Compilación backend | Ninguno | `mvn -DskipTests package` completó correctamente. | Aprobado |
+| Login válido e inválido | API inaccesible en `127.0.0.1:8080` tras reinicio | El backend compila; el proceso local no expuso el puerto durante la sesión de QA. | Bloqueado por entorno |
+| 403 y opción oculta por rol | API inaccesible en `127.0.0.1:8080` tras reinicio | No se alteró la condición de rol ni la API. | Bloqueado por entorno |
+| Registro, duplicados e idempotencia | API inaccesible en `127.0.0.1:8080` tras reinicio | No se alteró `FormData`, clave idempotente ni backend. | Bloqueado por entorno |
+| Archivo inválido o mayor de 15 MB | Ninguno en la validación visual | Se conserva rechazo antes del envío y mensaje visible. | Aprobado por revisión |
+| Responsividad 375/768/1280 px | El navegador integrado no adjuntó una pestaña de QA | CSS incluye puntos de ruptura y grids de una/dos columnas; requiere revisión manual local. | Bloqueado por entorno |
