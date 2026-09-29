@@ -1,2 +1,3 @@
 package com.taller.portal.model;
-public enum RoleName { DUENO, MECANICO, CLIENTE, SECRETARIA, DESARROLLADOR }
+/** Roles disponibles para la autorización del portal. */
+public enum RoleName { DUENO, MECANICO, CLIENTE, SECRETARIA, DESARROLLADOR, ADMINISTRADOR_SISTEMA, RECEPCIONISTA }

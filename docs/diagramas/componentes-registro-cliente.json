@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {"title":"Registro de Cliente","subtitle":"Componentes implementados","output":"docs/diagramas/componentes-registro-cliente.html","quality_profile":"showcase"},
+  "components": [
+    {"id":"ui","type":"frontend","label":"UI Registro Cliente","sublabel":"React + Tailwind","pos":[30,240],"size":[160,65]},
+    {"id":"auth","type":"security","label":"Login / JWT","sublabel":"roles autenticados","pos":[30,80],"size":[160,65]},
+    {"id":"facade","type":"backend","label":"ClienteRegistrationFacade","sublabel":"entrada única","pos":[370,240],"size":[190,65]},
+    {"id":"authorization","type":"security","label":"Autorización","sublabel":"Administrador o Recepcionista","pos":[280,80],"size":[190,65]},
+    {"id":"validation","type":"backend","label":"Validadores y duplicados","sublabel":"edad, MIME, contenido","pos":[540,100],"size":[180,65]},
+    {"id":"repository","type":"backend","label":"ClienteRepository","sublabel":"JPA Repository","pos":[580,320],"size":[170,65]},
+    {"id":"photos","type":"cloud","label":"Fotografías locales","sublabel":"uploads/clientes","pos":[540,410],"size":[170,65]},
+    {"id":"database","type":"database","label":"MySQL","sublabel":"clientes y únicos","pos":[800,280],"size":[160,65]}
+  ],
+  "connections": [
+    {"from":"ui","to":"facade","label":"POST cliente","variant":"emphasis"},
+    {"from":"auth","to":"authorization","label":"JWT con rol","variant":"security"},
+    {"from":"facade","to":"authorization","label":"autoriza rol","variant":"security"},
+    {"from":"facade","to":"validation","label":"valida y detecta"},
+    {"from":"facade","to":"repository","label":"transacción"},
+    {"from":"facade","to":"photos","label":"imagen validada"},
+    {"from":"repository","to":"database","label":"JPA / SQL"}
+  ]
+}
