@@ -4,6 +4,8 @@ backend/target/
 logs/
 .vite/
 backend/uploads/
+data/sepomex/*.txt
+data/sepomex/*.zip
 docs/diagramas/*.browser-check.json
 docs/diagramas/*.delivery.json
 docs/diagramas/*.finalize.json

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Importa una descarga TXT o ZIP oficial de Correos de México sin guardar datos externos en Git.
+set -euo pipefail
+RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ARCHIVO="${1:-$RAIZ/data/sepomex/CPdescarga.txt}"
+MAVEN="/home/venmve/.local/share/JetBrains/Toolbox/apps/intellij-idea/plugins/maven-plugin/lib/maven3/bin/mvn"
+if [[ ! -f "$ARCHIVO" ]]; then echo "No encontré el catálogo: $ARCHIVO"; exit 1; fi
+ARCHIVO="$(cd "$(dirname "$ARCHIVO")" && pwd)/$(basename "$ARCHIVO")"
+if [[ -x "$MAVEN" ]]; then EJECUTAR="$MAVEN"; else EJECUTAR="mvn"; fi
+(cd "$RAIZ/backend" && "$EJECUTAR" -q -Dmaven.repo.local=/tmp/taller-m2 -Dspring-boot.run.arguments="--app.sepomex.import-file=$ARCHIVO" spring-boot:run)
