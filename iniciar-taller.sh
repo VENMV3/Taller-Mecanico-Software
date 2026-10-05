@@ -10,6 +10,7 @@ MAVEN="/home/venmve/.local/share/JetBrains/Toolbox/apps/intellij-idea/plugins/ma
 LOGS="$RAIZ/logs"
 PID_BACKEND="$LOGS/backend.pid"
 PID_FRONTEND="$LOGS/frontend.pid"
+JAR_BACKEND="$RAIZ/backend/target/portal-taller-1.0.0.jar"
 
 mkdir -p "$LOGS" /tmp/taller-m2
 
@@ -55,10 +56,13 @@ docker compose -f "$COMPOSE" up -d mysql
 
 echo "[2/3] Iniciando API Spring Boot..."
 if ! en_ejecucion "$PID_BACKEND"; then
-  if [[ -x "$MAVEN" ]]; then
-    (cd "$RAIZ/backend"; nohup "$MAVEN" -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
+  if [[ -f "$JAR_BACKEND" ]]; then
+    # El JAR Spring Boot incluye dependencias; permite arrancar tras reiniciar sin descargar Maven.
+    (cd "$RAIZ/backend"; nohup java -jar "$JAR_BACKEND" >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
+  elif [[ -x "$MAVEN" ]]; then
+    (cd "$RAIZ/backend"; nohup "$MAVEN" -o -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
   elif command -v mvn >/dev/null; then
-    (cd "$RAIZ/backend"; nohup mvn -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
+    (cd "$RAIZ/backend"; nohup mvn -o -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
   else
     echo "No encontré Maven. Instálalo o ajusta la variable MAVEN en este script."
     exit 1
