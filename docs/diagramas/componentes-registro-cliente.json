@@ -10,7 +10,7 @@
       "url": "https://github.com/VENMV3/Taller-Mecanico-Software.git",
       "provider": "github",
       "link_mode": "web",
-      "revision": "7e9a81530882e15f16a11734c60c303d61d3fd47"
+      "revision": "1e431ea33d26df4051f7a7804fc6a7bae6fdb8dd"
     }
   },
   "components": [
@@ -27,7 +27,7 @@
       "id": "react-ui",
       "type": "frontend",
       "label": "Portal React",
-      "sublabel": "Registro de Cliente y dirección",
+      "sublabel": "Registro de Cliente, foto y dirección",
       "pos": [240, 360],
       "size": [165, 64],
       "sources": [{ "path": "frontend/src/main.jsx", "line": 55, "end_line": 74, "label": "Formulario multipart" }, { "path": "frontend/src/DireccionAutocompletada.jsx", "line": 12, "end_line": 37, "label": "Autocompletado local" }]
@@ -36,10 +36,10 @@
       "id": "sidebar",
       "type": "frontend",
       "label": "Menú lateral React",
-      "sublabel": "Opciones por rol y drawer móvil",
+      "sublabel": "Encabezado, roles y drawer móvil",
       "pos": [240, 220],
       "size": [175, 64],
-      "sources": [{ "path": "frontend/src/main.jsx", "line": 56, "end_line": 62, "label": "Navegación autenticada y controles ARIA" }]
+      "sources": [{ "path": "frontend/src/main.jsx", "line": 57, "end_line": 66, "label": "Navegación y controles ARIA" }]
     },
     {
       "id": "security",
