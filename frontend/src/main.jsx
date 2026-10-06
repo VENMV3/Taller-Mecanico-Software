@@ -4,6 +4,7 @@ import { ArrowLeft, Building2, CalendarDays, CarFront, CheckCircle2, ChevronLeft
 import './index.css';
 import './buttons.css';
 import './sidebar.css';
+import './refinements.css';
 import ClientesConsulta from './ClientesConsulta';
 import DireccionAutocompletada from './DireccionAutocompletada';
 import Talleres from './Talleres';

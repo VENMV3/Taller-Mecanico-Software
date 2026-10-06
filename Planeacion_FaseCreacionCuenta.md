@@ -128,3 +128,6 @@ Se conserva la paleta negra (`#050505`, `#101010`) y azul de marca (`#1677ff`, `
 ## 12. Menú Lateral y Ajuste de Botones
 
 Se corrigieron grupos de acciones con separación mediante `gap`, paginación con área táctil uniforme y suspensión como botón de peligro. La navegación autenticada ahora está en una barra lateral desplegable: Administrador ve Registrar cliente, Consultar clientes y Administrar talleres; Recepcionista ve Registrar y Consultar. En móvil funciona como drawer con overlay, cierre por botón, clic exterior y Escape. Archivos afectados: `frontend/src/main.jsx`, `frontend/src/sidebar.css` y `frontend/src/buttons.css`. Build frontend y pruebas backend ejecutados correctamente.
+## 13. Mejora Visual Integral
+
+Se conservó la base original: paleta oscura con azul eléctrico, tipografía del sistema, tarjetas y menú lateral. Se consolidaron tokens ligeros de espaciado, radios, elevación, bordes y superficies en `frontend/src/refinements.css`; se refinaron Login, formularios, tarjetas, consulta, tabla, estados, alertas y menú sin cambiar su estructura funcional. Los cambios enfatizan ritmo, contraste, hover/foco y adaptación móvil. Archivos modificados: `frontend/src/refinements.css`, `frontend/src/main.jsx`. Build y pruebas backend ejecutados correctamente.
