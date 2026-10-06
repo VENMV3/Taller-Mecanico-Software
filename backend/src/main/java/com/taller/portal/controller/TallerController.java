@@ -1,0 +1,9 @@
+package com.taller.portal.controller;
+import com.taller.portal.dto.TallerDtos.*; import com.taller.portal.service.TallerFacade; import jakarta.validation.Valid; import java.io.IOException; import java.util.Map; import org.springframework.http.*; import org.springframework.security.access.AccessDeniedException; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*; import org.springframework.web.multipart.MultipartFile;
+/** API de talleres; delega autorización y validación exclusivamente a la fachada. */
+@RestController @RequestMapping("/api/talleres") public class TallerController { private final TallerFacade facade; /** @param facade caso de uso talleres. */ public TallerController(TallerFacade facade){this.facade=facade;}
+ /** @return página de talleres permitidos. */ @GetMapping public Pagina listar(@RequestParam(defaultValue="0") int pagina,@RequestParam(defaultValue="10") int tamanio,Authentication a){return facade.listar(pagina,tamanio,a);}
+ /** @return taller creado. @throws IOException por foto. */ @PostMapping(consumes=MediaType.MULTIPART_FORM_DATA_VALUE) public ResponseEntity<Respuesta> crear(@Valid @RequestPart("datos") Registro d,@RequestPart(value="fotografia",required=false) MultipartFile f,@RequestHeader("Idempotency-Key") String key,Authentication a)throws IOException{return ResponseEntity.status(HttpStatus.CREATED).body(facade.crear(d,f,key,a));}
+ /** @return error visible 400. */ @ExceptionHandler(IllegalArgumentException.class) ResponseEntity<Map<String,String>> invalido(Exception e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));}
+ /** @return error visible 403. */ @ExceptionHandler(AccessDeniedException.class) ResponseEntity<Map<String,String>> prohibido(Exception e){return ResponseEntity.status(403).body(Map.of("message",e.getMessage()));}
+}

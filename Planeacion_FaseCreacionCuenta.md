@@ -119,3 +119,6 @@ Diagrama de componentes: [JSON fuente](docs/diagramas/componentes-registro-clien
 | Catálogo vacío/manual, E2E de registro y aislamiento físico de internet | No se vació MySQL de usuario ni se desconectó la red compartida | El código y las consultas usan solo rutas locales; captura manual permanece disponible | Pendiente de prueba aislada no destructiva |
 | Diagrama Archify | Primera composición sin espacio para dos etiquetas; Chromium ausente para la puerta de navegador | Se reubicaron componentes; validación, entrega y comprobación estricta aprobadas. La evidencia de navegador queda pendiente por entorno | Parcial: artefactos generados y validados |
 | Push a GitHub | Prueba física sin red pendiente | Se creó solo el commit local `62a2d8e`; no se publicó | Pendiente de autorización/cierre |
+## 10. UC-CV-02 Administración de Clientes
+
+**Estado: en desarrollo.** Se agregaron talleres, asociación obligatoria por taller, estatus de cliente, consultas paginadas y controles de autorización en Facade/Repository. La especificación de datos y permisos está en [UC-CV-02_Administracion_Clientes.md](docs/UC-CV-02_Administracion_Clientes.md). La compilación y el build del frontend son correctos; faltan completar las pruebas funcionales de edición y suspensión antes de publicar.

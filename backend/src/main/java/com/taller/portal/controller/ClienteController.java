@@ -1,25 +1,15 @@
 package com.taller.portal.controller;
-import com.taller.portal.dto.ClienteDtos.*; import com.taller.portal.service.ClienteRegistrationFacade; import jakarta.validation.Valid; import org.springframework.http.*; import org.springframework.security.access.AccessDeniedException; import org.springframework.security.core.Authentication; import org.springframework.web.bind.annotation.*; import org.springframework.web.multipart.MultipartFile; import java.io.IOException; import java.util.Map;
-/** API de presentación; delega todo el registro a la fachada. */
-@RestController @RequestMapping("/api/clientes") public class ClienteController { private final ClienteRegistrationFacade facade; /** @param facade único caso de uso permitido. */ public ClienteController(ClienteRegistrationFacade facade){this.facade=facade;} /** @param datos JSON multipart validado @param foto imagen adjunta @param key clave idempotente @param auth usuario JWT @return Cliente Registrado @throws IOException si falla foto. */ @PostMapping(consumes=MediaType.MULTIPART_FORM_DATA_VALUE) public ResponseEntity<Respuesta> registrar(@Valid @RequestPart("datos") Registro datos,@RequestPart("fotografia") MultipartFile foto,@RequestHeader("Idempotency-Key") String key,Authentication auth)throws IOException{return ResponseEntity.status(HttpStatus.CREATED).body(facade.registrar(datos,foto,key,auth));} /** @param e error de validación/duplicado @return mensaje 400. */ @ExceptionHandler({IllegalArgumentException.class}) ResponseEntity<Map<String,String>> bad(Exception e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));} /** @param e denegación de rol @return mensaje 403. */ @ExceptionHandler(AccessDeniedException.class) ResponseEntity<Map<String,String>> denied(Exception e){return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message",e.getMessage()));}
-    /** @param pagina base cero @param tamanio 1..50 @param busqueda texto
-     * @param auth sesión @return página autorizada; propaga validación y denegación de fachada. */
-    @GetMapping
-    public com.taller.portal.dto.ClienteConsultaDtos.Pagina consultar(
-        @RequestParam(defaultValue="0") int pagina, @RequestParam(defaultValue="10") int tamanio,
-        @RequestParam(defaultValue="") String busqueda, Authentication auth) {
-        return facade.consultar(pagina, tamanio, busqueda, auth);
-    }
-    /** @param id cliente @param auth sesión @return detalle; 404 si no existe, 403 por rol. */
-    @GetMapping("/{id}")
-    public com.taller.portal.dto.ClienteConsultaDtos.Detalle detalle(@PathVariable Long id, Authentication auth) {
-        return facade.detalle(id, auth);
-    }
-    /** @param id cliente @param auth sesión @return PNG privado @throws IOException por lectura fallida. */
-    @GetMapping("/{id}/fotografia")
-    public ResponseEntity<byte[]> fotografia(@PathVariable Long id, Authentication auth) throws IOException {
-        var foto = facade.fotografia(id, auth);
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(foto.mime()))
-            .cacheControl(CacheControl.noStore()).header("X-Content-Type-Options", "nosniff").body(foto.contenido());
-    }
+import com.taller.portal.dto.*; import com.taller.portal.dto.ClienteDtos.*; import com.taller.portal.service.ClienteRegistrationFacade; import jakarta.validation.Valid; import java.io.IOException; import java.util.Map; import org.springframework.http.*; import org.springframework.security.access.AccessDeniedException; import org.springframework.security.core.Authentication; import org.springframework.web.bind.MethodArgumentNotValidException; import org.springframework.web.bind.annotation.*; import org.springframework.web.multipart.MultipartFile;
+/** API de clientes; la fachada concentra reglas, alcance e idempotencia. */
+@RestController @RequestMapping("/api/clientes") public class ClienteController { private final ClienteRegistrationFacade facade; /** @param facade caso de uso clientes. */ public ClienteController(ClienteRegistrationFacade facade){this.facade=facade;}
+ /** Registra cliente en el taller autorizado. */ @PostMapping(consumes=MediaType.MULTIPART_FORM_DATA_VALUE) public ResponseEntity<Respuesta> registrar(@Valid @RequestPart("datos") Registro d,@RequestPart("fotografia") MultipartFile f,@RequestHeader("Idempotency-Key") String key,Authentication a)throws IOException{return ResponseEntity.status(HttpStatus.CREATED).body(facade.registrar(d,f,key,a));}
+ /** Lista con filtro obligatorio de taller derivado en servidor. */ @GetMapping public AdministracionClienteDtos.Pagina consultar(@RequestParam(defaultValue="0") int pagina,@RequestParam(defaultValue="10") int tamanio,@RequestParam(defaultValue="") String busqueda,@RequestParam(required=false) Long tallerId,@RequestParam(defaultValue="nombreCompleto") String orden,@RequestParam(defaultValue="asc") String direccion,Authentication a){return facade.consultar(pagina,tamanio,busqueda,tallerId,orden,direccion,a);}
+ /** Detalle aislado; responde 404 cuando el ID no pertenece al taller permitido. */ @GetMapping("/{id}") public AdministracionClienteDtos.Detalle detalle(@PathVariable Long id,@RequestParam(required=false) Long tallerId,Authentication a){return facade.detalle(id,tallerId,a);}
+ /** Edita sin permitir que recepción cambie de taller. */ @PutMapping(value="/{id}",consumes=MediaType.MULTIPART_FORM_DATA_VALUE) public AdministracionClienteDtos.Respuesta editar(@PathVariable Long id,@Valid @RequestPart("datos") AdministracionClienteDtos.Edicion d,@RequestPart(value="fotografia",required=false) MultipartFile f,@RequestHeader("Idempotency-Key") String key,@RequestParam(required=false) Long tallerId,Authentication a)throws IOException{return facade.editar(id,d,f,key,tallerId,a);}
+ /** Suspende el expediente sin eliminarlo. */ @PostMapping("/{id}/suspender") public AdministracionClienteDtos.Respuesta suspender(@PathVariable Long id,@RequestParam(required=false) Long tallerId,Authentication a){return facade.suspender(id,tallerId,a);}
+ /** Reactiva el expediente sin crear uno nuevo. */ @PostMapping("/{id}/reactivar") public AdministracionClienteDtos.Respuesta reactivar(@PathVariable Long id,@RequestParam(required=false) Long tallerId,Authentication a){return facade.reactivar(id,tallerId,a);}
+ /** Sirve fotografía sin exponer ruta privada. */ @GetMapping("/{id}/fotografia") public ResponseEntity<byte[]> fotografia(@PathVariable Long id,@RequestParam(required=false) Long tallerId,Authentication a)throws IOException{var f=facade.fotografia(id,tallerId,a);return ResponseEntity.ok().contentType(MediaType.parseMediaType(f.mime())).cacheControl(CacheControl.noStore()).header("X-Content-Type-Options","nosniff").body(f.contenido());}
+ /** @return error 400 visible. */ @ExceptionHandler(IllegalArgumentException.class) ResponseEntity<Map<String,String>> invalido(Exception e){return ResponseEntity.badRequest().body(Map.of("message",e.getMessage()));}
+ /** Convierte la validación Bean Validation en un mensaje JSON visible para el formulario. */ @ExceptionHandler(MethodArgumentNotValidException.class) ResponseEntity<Map<String,String>> validacion(MethodArgumentNotValidException e){String campo=e.getBindingResult().getFieldError()==null?"Los datos son inválidos":e.getBindingResult().getFieldError().getField();return ResponseEntity.badRequest().body(Map.of("message","Revisa el campo: "+campo));}
+ /** @return error 403 visible. */ @ExceptionHandler(AccessDeniedException.class) ResponseEntity<Map<String,String>> prohibido(Exception e){return ResponseEntity.status(403).body(Map.of("message",e.getMessage()));}
 }
