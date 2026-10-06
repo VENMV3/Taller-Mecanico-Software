@@ -125,3 +125,6 @@ Diagrama de componentes: [JSON fuente](docs/diagramas/componentes-registro-clien
 ## 11. Sistema de Botones
 
 Se conserva la paleta negra (`#050505`, `#101010`) y azul de marca (`#1677ff`, `#0e63d8`), además de error (`#f87171`) y texto claro. `frontend/src/buttons.css` centraliza variantes primario, contorno/fantasma, peligro e icono; tamaños pequeño, medio y grande; estados hover, active, focus-visible, deshabilitado y carga. Se aplicó a Login, Registro, Consulta, Talleres, paginación, acciones y confirmaciones. Build Vite y pruebas backend ejecutados correctamente; se verificó que los botones conservan su comportamiento y los iconos de orden incluyen etiqueta accesible.
+## 12. Menú Lateral y Ajuste de Botones
+
+Se corrigieron grupos de acciones con separación mediante `gap`, paginación con área táctil uniforme y suspensión como botón de peligro. La navegación autenticada ahora está en una barra lateral desplegable: Administrador ve Registrar cliente, Consultar clientes y Administrar talleres; Recepcionista ve Registrar y Consultar. En móvil funciona como drawer con overlay, cierre por botón, clic exterior y Escape. Archivos afectados: `frontend/src/main.jsx`, `frontend/src/sidebar.css` y `frontend/src/buttons.css`. Build frontend y pruebas backend ejecutados correctamente.
