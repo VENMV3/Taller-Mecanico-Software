@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Search, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, Eye, Pencil, Search, UserPlus, Users } from 'lucide-react';
 import './clientes-consulta.css';
 
 /** Ejecuta GET privado; parámetros URL y signal; devuelve JSON o lanza Error HTTP. */
@@ -42,7 +42,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
   const [error, setError] = useState(''); const [cargando, setCargando] = useState(true);
   const [intento, setIntento] = useState(0); const [talleres, setTalleres] = useState([]); const [tallerId, setTallerId] = useState('');
   const [orden, setOrden] = useState('nombreCompleto'); const [direccion, setDireccion] = useState('asc'); const admin = user?.rol === 'ADMINISTRADOR_SISTEMA';
-  const [editando, setEditando] = useState(false); const [edicion, setEdicion] = useState({}); const [guardando, setGuardando] = useState(false); const [confirmarSuspension, setConfirmarSuspension] = useState(false); const [aviso, setAviso] = useState('');
+  const [editando, setEditando] = useState(false); const [edicion, setEdicion] = useState({}); const [guardando, setGuardando] = useState(false); const [confirmarSuspension, setConfirmarSuspension] = useState(false); const [aviso, setAviso] = useState(''); const [abrirEnEdicion,setAbrirEnEdicion]=useState(false);
   useEffect(() => { consultar('/api/talleres?pagina=0&tamanio=10').then(x => { setTalleres(x.talleres || []); if (admin && x.talleres?.[0]) setTallerId(String(x.talleres[0].id)); }).catch(() => setTalleres([])); }, [admin]);
   useEffect(() => {
     const controller = new AbortController(); setCargando(true); setError(''); setDetalle(null);
@@ -62,6 +62,10 @@ export default function ClientesConsulta({ volver, registrar, user }) {
   function buscar(event) { event.preventDefault(); setPagina(0); setBusqueda(texto.trim()); }
   /** Abre el formulario con los datos actuales del expediente. @returns {void}. */
   function abrirEdicion(){setEdicion({...detalle,tallerId:String(detalle.tallerId)});setEditando(true);setAviso('');}
+  /** Abre la ficha o su edición sin cambiar la autorización del servidor. @param {number} clienteId identificador del cliente. @param {boolean} editar indica si debe mostrarse el formulario. @returns {void}. */
+  function abrirCliente(clienteId,editar=false){setAbrirEnEdicion(editar);setId(clienteId);}
+  /** Activa edición una vez cargada la ficha solicitada desde la acción de lápiz. @returns {void}. */
+  useEffect(()=>{if(detalle&&abrirEnEdicion){setEdicion({...detalle,tallerId:String(detalle.tallerId)});setEditando(true);setAviso('');setAbrirEnEdicion(false);}},[detalle,abrirEnEdicion]);
   /** Guarda edición multipart e impide reenvíos mientras la API responde. @param {Event} event envío. @returns {Promise<void>}. */
   async function guardarEdicion(event){event.preventDefault();setGuardando(true);setAviso('');try{const d=new FormData();const datos={...edicion,edad:Number(edicion.edad),tallerId:admin?Number(edicion.tallerId):null,direccion:{calle:edicion.calle,colonia:edicion.colonia,municipio:edicion.municipio,estado:edicion.estado,codigoPostal:edicion.codigoPostal}};d.append('datos',new Blob([JSON.stringify(datos)],{type:'application/json'}));const respuesta=await fetch(`/api/clientes/${id}${admin?`?tallerId=${tallerId}`:''}`,{method:'PUT',headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`,'Idempotency-Key':crypto.randomUUID()},body:d});const cuerpo=await respuesta.json();if(!respuesta.ok)throw Error(cuerpo.message||'No fue posible actualizar el cliente.');setAviso('Cliente actualizado');setEditando(false);setIntento(x=>x+1);}catch(e){setAviso(e.message);}finally{setGuardando(false);}}
   /** Suspende con confirmación explícita; la operación del servidor es idempotente. @returns {Promise<void>}. */
@@ -91,7 +95,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
               <td data-label="Cliente"><div className="cliente-identity"><FotoCliente id={cliente.id} nombre={cliente.nombreCompleto} tallerId={admin?tallerId:null} /><strong>{cliente.nombreCompleto}</strong></div></td>
               <td data-label="Teléfono personal">{cliente.telefonoPersonal}</td><td data-label="E-mail">{cliente.email}</td><td data-label="Municipio">{cliente.municipio}</td>
               <td data-label="Estatus"><span className="consulta-badge">{cliente.estatus==='SUSPENDIDO'?'Suspendido':'Activo'}</span></td><td>{cliente.taller}</td>
-              <td><button className="text-button consulta-open" onClick={() => setId(cliente.id)} aria-label={`Editar ${cliente.nombreCompleto}`}>Ver / editar →</button></td>
+              <td data-label="Acciones"><div className="client-action-group"><button type="button" className="icon-button row-action" title="Ver detalle" aria-label={`Ver detalle de ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id)}><Eye size={18}/><span className="action-label">Ver</span></button><button type="button" className="icon-button row-action" title="Editar cliente" aria-label={`Editar ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id,true)}><Pencil size={18}/><span className="action-label">Editar</span></button></div></td>
             </tr>)}</tbody></table>}
         <nav className="consulta-pagination" aria-label="Paginación de clientes"><span>{resultado.total} clientes · Página {pagina + 1} de {Math.max(1, resultado.paginas)}</span>
           <div><button className="text-button" disabled={pagina === 0} onClick={() => setPagina(pagina - 1)}>Anterior</button>

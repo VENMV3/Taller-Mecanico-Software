@@ -131,3 +131,19 @@ Se corrigieron grupos de acciones con separación mediante `gap`, paginación co
 ## 13. Mejora Visual Integral
 
 Se conservó la base original: paleta oscura con azul eléctrico, tipografía del sistema, tarjetas y menú lateral. Se consolidaron tokens ligeros de espaciado, radios, elevación, bordes y superficies en `frontend/src/refinements.css`; se refinaron Login, formularios, tarjetas, consulta, tabla, estados, alertas y menú sin cambiar su estructura funcional. Los cambios enfatizan ritmo, contraste, hover/foco y adaptación móvil. Archivos modificados: `frontend/src/refinements.css`, `frontend/src/main.jsx`. Build y pruebas backend ejecutados correctamente.
+
+## 14. Correcciones de Interfaz y Navegación al Panel Principal
+
+- **Logo cubierto:** el drawer y su overlay ocupaban `inset: 0` y tenían una capa superior a la cabecera. `sidebar.css` define ahora `--header-height` y una escala de capas (`overlay`, `sidebar`, `header`, `modal`, `toast`); el menú y overlay empiezan debajo del encabezado, por lo que no pueden cubrir la marca.
+- **Acciones de clientes:** el enlace único «Ver / editar» se reemplazó por un grupo de iconos de ojo y lápiz con área táctil, etiquetas accesibles, tooltip de escritorio y texto visible en tarjetas móviles. El ojo abre el detalle; el lápiz abre el mismo expediente directamente en edición, sin modificar permisos.
+- **Foto del taller:** `Talleres.jsx` usa ahora la zona de carga existente: clic o arrastre, validación local de tipo/tamaño, vista previa, cambiar y quitar. La foto sigue siendo opcional y el backend conserva sus validaciones.
+- **Panel principal:** la cabecera muestra el taller devuelto por la sesión (o `TallerCore` como respaldo), funciona como enlace de retorno fuera del panel principal y presenta el indicador de sección. El primer elemento del menú es «Panel principal», con activo, `aria-current` y título de pestaña sincronizados.
+
+Archivos modificados: `frontend/src/main.jsx`, `frontend/src/sidebar.css`, `frontend/src/ClientesConsulta.jsx`, `frontend/src/clientes-consulta.css`, `frontend/src/Talleres.jsx`, `frontend/src/refinements.css`, `backend/src/main/java/com/taller/portal/dto/AuthDtos.java` y `backend/src/main/java/com/taller/portal/service/AuthService.java`. El único ajuste de API fue añadir el nombre del taller a la respuesta de sesión, necesario para mostrar el contexto real del usuario autenticado.
+
+| Verificación | Resultado |
+| --- | --- |
+| Build Vite | Aprobado (`npm run build`) |
+| Validación de diff y referencias antiguas de «Ver / editar» | Aprobado (`git diff --check`, sin enlace anterior) |
+| Suite Java | No ejecutable en este equipo: no existe Maven Wrapper y `mvn` no está instalado; los últimos reportes disponibles registran 0 fallos, pero deben repetirse con Maven antes de publicar. |
+| Validación visual interactiva 375/768/1280 | Pendiente de revisión en navegador local; el build confirma la integración, no sustituye esta prueba. |
