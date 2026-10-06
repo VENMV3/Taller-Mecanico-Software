@@ -10,7 +10,7 @@
       "url": "https://github.com/VENMV3/Taller-Mecanico-Software.git",
       "provider": "github",
       "link_mode": "web",
-      "revision": "62a2d8ec583dc756bd52b7f82da879a4dc4d8564"
+      "revision": "7e9a81530882e15f16a11734c60c303d61d3fd47"
     }
   },
   "components": [
@@ -31,6 +31,15 @@
       "pos": [240, 360],
       "size": [165, 64],
       "sources": [{ "path": "frontend/src/main.jsx", "line": 55, "end_line": 74, "label": "Formulario multipart" }, { "path": "frontend/src/DireccionAutocompletada.jsx", "line": 12, "end_line": 37, "label": "Autocompletado local" }]
+    },
+    {
+      "id": "sidebar",
+      "type": "frontend",
+      "label": "Menú lateral React",
+      "sublabel": "Opciones por rol y drawer móvil",
+      "pos": [240, 220],
+      "size": [175, 64],
+      "sources": [{ "path": "frontend/src/main.jsx", "line": 56, "end_line": 62, "label": "Navegación autenticada y controles ARIA" }]
     },
     {
       "id": "security",
@@ -143,6 +152,8 @@
   ],
   "connections": [
     { "id": "operador-ui", "from": "operador", "to": "react-ui", "label": "usa", "variant": "emphasis" },
+    { "id": "operador-sidebar", "from": "operador", "to": "sidebar", "label": "navega por rol", "variant": "emphasis" },
+    { "id": "sidebar-ui", "from": "sidebar", "to": "react-ui", "label": "selecciona vista" },
     { "id": "ui-cliente", "from": "react-ui", "to": "cliente-controller", "label": "POST multipart con Bearer", "variant": "emphasis" },
     { "id": "ui-postal", "from": "react-ui", "to": "postal-controller", "label": "GET local con debounce", "variant": "emphasis" },
     { "id": "security-cliente", "from": "security", "to": "cliente-controller", "label": "valida JWT", "variant": "security" },
