@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ArrowLeft, Building2, CalendarDays, CarFront, CheckCircle2, ClipboardList, ContactRound, Eye, EyeOff, ImagePlus, LockKeyhole, LogOut, Mail, MapPin, Phone, ShieldCheck, UserPlus, Users, Wrench } from 'lucide-react';
 import './index.css';
+import './buttons.css';
 import ClientesConsulta from './ClientesConsulta';
 import DireccionAutocompletada from './DireccionAutocompletada';
 import Talleres from './Talleres';

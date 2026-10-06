@@ -122,3 +122,6 @@ Diagrama de componentes: [JSON fuente](docs/diagramas/componentes-registro-clien
 ## 10. UC-CV-02 Administración de Clientes
 
 **Estado: en desarrollo.** Se agregaron talleres, asociación obligatoria por taller, estatus de cliente, consultas paginadas y controles de autorización en Facade/Repository. La especificación de datos y permisos está en [UC-CV-02_Administracion_Clientes.md](docs/UC-CV-02_Administracion_Clientes.md). La compilación y el build del frontend son correctos; faltan completar las pruebas funcionales de edición y suspensión antes de publicar.
+## 11. Sistema de Botones
+
+Se conserva la paleta negra (`#050505`, `#101010`) y azul de marca (`#1677ff`, `#0e63d8`), además de error (`#f87171`) y texto claro. `frontend/src/buttons.css` centraliza variantes primario, contorno/fantasma, peligro e icono; tamaños pequeño, medio y grande; estados hover, active, focus-visible, deshabilitado y carga. Se aplicó a Login, Registro, Consulta, Talleres, paginación, acciones y confirmaciones. Build Vite y pruebas backend ejecutados correctamente; se verificó que los botones conservan su comportamiento y los iconos de orden incluyen etiqueta accesible.
