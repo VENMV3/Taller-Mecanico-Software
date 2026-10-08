@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Descarga NHTSA vPIC o importa un JSON guardado; la forma canónica almacenada es MAYÚSCULAS con espacios únicos.
+set -euo pipefail
+RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+MAVEN="/home/venmve/.local/share/JetBrains/Toolbox/apps/intellij-idea/plugins/maven-plugin/lib/maven3/bin/mvn"
+ARCHIVO="$RAIZ/data/vpic/vpic_catalogo.json"; DESCARGAR=true
+if [[ "${1:-}" == "--archivo" ]]; then ARCHIVO="${2:?Falta ruta para --archivo}"; DESCARGAR=false; fi
+[[ -x "$MAVEN" ]] || MAVEN="mvn"
+mkdir -p "$(dirname "$ARCHIVO")"
+ARGS="--app.vpic.import-file=$ARCHIVO"; $DESCARGAR && ARGS="$ARGS --app.vpic.download=true"
+(cd "$RAIZ/backend" && "$MAVEN" -q -Dmaven.repo.local=/tmp/taller-m2 -Dspring-boot.run.arguments="$ARGS" spring-boot:run)
