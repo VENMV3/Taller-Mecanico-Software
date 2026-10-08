@@ -1,0 +1,14 @@
+CREATE TABLE status (id BIGINT NOT NULL AUTO_INCREMENT, str_valor VARCHAR(12) NOT NULL, str_descripcion VARCHAR(80) NOT NULL, PRIMARY KEY (id), CONSTRAINT uk_status_valor UNIQUE (str_valor), CONSTRAINT uk_status_descripcion UNIQUE (str_descripcion));
+INSERT INTO status (str_valor,str_descripcion) SELECT 'ACT','Activo' WHERE NOT EXISTS (SELECT 1 FROM status WHERE str_valor='ACT');
+INSERT INTO status (str_valor,str_descripcion) SELECT 'SUS','Suspendido' WHERE NOT EXISTS (SELECT 1 FROM status WHERE str_valor='SUS');
+INSERT INTO status (str_valor,str_descripcion) SELECT 'CAN','Cancelado' WHERE NOT EXISTS (SELECT 1 FROM status WHERE str_valor='CAN');
+ALTER TABLE clientes ADD COLUMN status_id BIGINT NULL;
+ALTER TABLE clientes ADD COLUMN is_deleted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE clientes ADD COLUMN deleted_at TIMESTAMP NULL;
+ALTER TABLE clientes ADD COLUMN deleted_by BIGINT NULL;
+UPDATE clientes SET status_id=(SELECT id FROM status WHERE str_valor=CASE WHEN estatus='SUSPENDIDO' THEN 'SUS' ELSE 'ACT' END) WHERE status_id IS NULL;
+ALTER TABLE clientes MODIFY COLUMN status_id BIGINT NOT NULL;
+ALTER TABLE clientes ADD CONSTRAINT fk_cliente_status FOREIGN KEY (status_id) REFERENCES status(id);
+ALTER TABLE clientes ADD CONSTRAINT fk_cliente_deleted_by FOREIGN KEY (deleted_by) REFERENCES usuarios(id);
+CREATE INDEX ix_clientes_taller_status_deleted ON clientes(taller_id,status_id,is_deleted);
+ALTER TABLE clientes DROP COLUMN estatus;
