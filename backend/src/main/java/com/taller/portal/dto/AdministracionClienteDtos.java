@@ -16,4 +16,6 @@ public final class AdministracionClienteDtos { private AdministracionClienteDtos
  public record PaginaSuspension(List<SuspensionResumen> clientes,int pagina,int tamanio,long total,int paginas){}
  /** Respuesta de edición/suspensión. */
  public record Respuesta(Long id,String mensaje,String estatus){}
+ /** Cliente devuelto después de edición; no expone ruta de fotografía ni datos de auditoría. */
+ public record Actualizado(Long id,String mensaje,String nombreCompleto,String contactoAlternativo,Integer edad,LocalDate fechaNacimiento,String telefonoPersonal,String telefonoTrabajo,String email,String emailTrabajo,ClienteDtos.Direccion direccion,Long tallerId,String taller,String estatus){}
 }

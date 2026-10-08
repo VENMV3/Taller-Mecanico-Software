@@ -19,15 +19,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.server.ResponseStatusException;
+import jakarta.validation.Validator;
 
 /** Prueba la autorización, paginación y condición atómica del caso de suspensión. */
 @ExtendWith(MockitoExtension.class)
 class SuspensionFacadeTest {
-  @Mock ClienteRepository clientes; @Mock TallerRepository talleres; @Mock UserRepository usuarios; @Mock StatusRepository status;
+  @Mock ClienteRepository clientes; @Mock TallerRepository talleres; @Mock UserRepository usuarios; @Mock StatusRepository status; @Mock Validator validator;
   ClienteRegistrationFacade facade; Taller taller; Authentication admin;
 
   /** Inicializa la fachada aislada y una identidad administradora. @return void. */
-  @BeforeEach void preparar(){facade=new ClienteRegistrationFacade(clientes,talleres,usuarios,status);taller=new Taller();taller.id=1L;admin=new UsernamePasswordAuthenticationToken("admin@taller.local","",List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR_SISTEMA")));}
+  @BeforeEach void preparar(){facade=new ClienteRegistrationFacade(clientes,talleres,usuarios,status,validator);taller=new Taller();taller.id=1L;admin=new UsernamePasswordAuthenticationToken("admin@taller.local","",List.of(new SimpleGrantedAuthority("ROLE_ADMINISTRADOR_SISTEMA")));}
   /** Configura el taller requerido por las operaciones permitidas. @return void. */
   private void permitirTaller(){when(talleres.findById(1L)).thenReturn(Optional.of(taller));}
   /** Impone tamaño máximo diez y conserva la consulta proyectada. @return void. */
