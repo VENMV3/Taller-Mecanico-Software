@@ -1,0 +1,2 @@
+/** Ajustes responsivos para el formulario modal de edición de clientes. */
+.cliente-edicion-modal{width:min(100%,58rem)}.cliente-edicion-modal fieldset{min-width:0;border:1px solid var(--line);border-radius:14px;padding:1rem}.cliente-edicion-modal legend{padding:0 .35rem;color:var(--muted);font-size:.85rem}.cliente-edicion-modal .field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem}.cliente-edicion-modal .form-field{min-width:0}@media(max-width:680px){.cliente-edicion-modal .field-grid{grid-template-columns:1fr}}
