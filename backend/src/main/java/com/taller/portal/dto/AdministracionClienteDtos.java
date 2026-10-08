@@ -10,6 +10,10 @@ public final class AdministracionClienteDtos { private AdministracionClienteDtos
  public record Detalle(Long id,String nombreCompleto,String contactoAlternativo,Integer edad,LocalDate fechaNacimiento,String telefonoPersonal,String telefonoTrabajo,String email,String emailTrabajo,String calle,String colonia,String municipio,String estado,String codigoPostal,Long tallerId,String taller,String estatus){}
  /** Página de administración. */
  public record Pagina(List<Resumen> clientes,int pagina,int tamanio,long total,int paginas){}
+ /** Fila mínima para la bandeja de suspensión; incluye expedientes soft-deleted. */
+ public record SuspensionResumen(Long id,String nombreCompleto,String telefonoPersonal,String email,Long tallerId,String taller,String estatusCodigo,String estatusDescripcion,boolean eliminado){}
+ /** Página de suspensión preparada por una sola consulta paginada. */
+ public record PaginaSuspension(List<SuspensionResumen> clientes,int pagina,int tamanio,long total,int paginas){}
  /** Respuesta de edición/suspensión. */
  public record Respuesta(Long id,String mensaje,String estatus){}
 }
