@@ -1,52 +1,57 @@
-import React, { useEffect, useState } from 'react';
-import { ChevronDown, ChevronUp, ClipboardList } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, ClipboardList, Pencil, Plus, X } from 'lucide-react';
 import { statusApi } from './statusApi';
 import './clientes-consulta.css';
+import './status-listado.css';
 
 const columnasOrdenables = ['id', 'strValor', 'strDescripcion'];
+const valoresBase = new Set(['ACT', 'SUS', 'CAN']);
+const inicial = { strValor: '', strDescripcion: '' };
 
-/** Muestra el catálogo de estatus de solo lectura con paginación y orden del servidor. @returns {React.JSX.Element} Vista de estatus. */
+/** Valida y normaliza los campos antes de solicitar la API. @param {object} valores Datos capturados. @returns {{valores: object, errores: object}} Datos normalizados y errores por campo. */
+function validar(valores) {
+  const normalizados = { strValor: valores.strValor.trim().toUpperCase(), strDescripcion: valores.strDescripcion.trim() };
+  const errores = {};
+  if (!normalizados.strValor) errores.strValor = 'El valor es obligatorio.';
+  else if (!/^[A-Z0-9_]+$/.test(normalizados.strValor)) errores.strValor = 'Usa solo mayúsculas, números y guion bajo.';
+  else if (normalizados.strValor.length > 12) errores.strValor = 'El valor admite máximo 12 caracteres.';
+  if (!normalizados.strDescripcion) errores.strDescripcion = 'La descripción es obligatoria.';
+  else if (normalizados.strDescripcion.length > 80) errores.strDescripcion = 'La descripción admite máximo 80 caracteres.';
+  return { valores: normalizados, errores };
+}
+
+/** Modal accesible para crear o editar un estatus. @param {{modal:object,onClose:Function,onSaved:Function,openerRef:object}} props Estado y callbacks. @returns {React.JSX.Element|null} Diálogo. */
+function StatusModal({ modal, onClose, onSaved, openerRef }) {
+  const esEdicion = modal?.modo === 'editar'; const esBase = esEdicion && valoresBase.has(modal.estado.strValor);
+  const [valores, setValores] = useState(inicial); const [errores, setErrores] = useState({}); const [errorServidor, setErrorServidor] = useState(''); const [guardando, setGuardando] = useState(false);
+  const dialogoRef = useRef(null); const primerCampoRef = useRef(null);
+  useEffect(() => { if (!modal) return undefined; setValores(esEdicion ? { strValor: modal.estado.strValor, strDescripcion: modal.estado.strDescripcion } : inicial); setErrores({}); setErrorServidor(''); setGuardando(false); const temporizador = window.setTimeout(() => primerCampoRef.current?.focus(), 0);
+    /** Encierra Tab y permite cerrar el diálogo con Escape. @param {KeyboardEvent} evento Tecla presionada. @returns {void} */
+    function manejarTecla(evento) { if (evento.key === 'Escape' && !guardando) { onClose(); return; } if (evento.key !== 'Tab' || !dialogoRef.current) return; const focos = [...dialogoRef.current.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]; if (!focos.length) return; const primero = focos[0]; const ultimo = focos[focos.length - 1]; if (evento.shiftKey && document.activeElement === primero) { evento.preventDefault(); ultimo.focus(); } if (!evento.shiftKey && document.activeElement === ultimo) { evento.preventDefault(); primero.focus(); } }
+    window.addEventListener('keydown', manejarTecla); return () => { window.clearTimeout(temporizador); window.removeEventListener('keydown', manejarTecla); };
+  }, [modal, esEdicion, guardando, onClose]);
+  if (!modal) return null;
+  /** Actualiza la captura y borra el error del campo editado. @param {React.ChangeEvent<HTMLInputElement>} evento Cambio de entrada. @returns {void} */
+  function cambiar(evento) { const { name, value } = evento.target; setValores((actual) => ({ ...actual, [name]: name === 'strValor' ? value.toUpperCase() : value })); setErrores((actual) => ({ ...actual, [name]: '' })); setErrorServidor(''); }
+  /** Guarda el estatus y mantiene abierto el diálogo si el servidor responde con error. @param {React.FormEvent<HTMLFormElement>} evento Envío del formulario. @returns {Promise<void>} Operación completada. */
+  async function guardar(evento) { evento.preventDefault(); const revision = validar(valores); setValores(revision.valores); setErrores(revision.errores); setErrorServidor(''); if (Object.keys(revision.errores).length) return; setGuardando(true); try { if (esEdicion) await statusApi.actualizar(modal.estado.id, revision.valores); else await statusApi.crear(revision.valores); onSaved(esEdicion ? 'Estatus actualizado correctamente.' : 'Estatus creado correctamente.'); onClose(); window.setTimeout(() => openerRef.current?.focus(), 0); } catch (causa) { setErrorServidor(causa.message || 'No fue posible guardar el estatus.'); } finally { setGuardando(false); } }
+  return <div className="status-modal-backdrop" role="presentation"><section ref={dialogoRef} className="status-modal" role="dialog" aria-modal="true" aria-labelledby="status-modal-title" aria-describedby="status-modal-description"><header><div><p className="eyebrow">Catálogo del sistema</p><h2 id="status-modal-title">{esEdicion ? 'Editar estatus' : 'Nuevo estatus'}</h2></div><button type="button" className="icon-button" aria-label="Cerrar modal" onClick={onClose} disabled={guardando}><X size={19} /></button></header><p id="status-modal-description">Los campos con asterisco son obligatorios.</p>{errorServidor && <div className="notice notice-error" role="alert">{errorServidor}</div>}<form onSubmit={guardar} noValidate><div className="form-field"><label htmlFor="status-valor">Valor *</label><input ref={esBase ? undefined : primerCampoRef} id="status-valor" name="strValor" value={valores.strValor} onChange={cambiar} maxLength={12} disabled={esBase || guardando} aria-invalid={Boolean(errores.strValor)} aria-describedby={errores.strValor ? 'status-valor-error' : undefined} autoComplete="off" />{esBase && <small className="field-hint">El código de un estatus base no se puede modificar.</small>}{errores.strValor && <small id="status-valor-error" className="field-error" role="alert">{errores.strValor}</small>}</div><div className="form-field"><label htmlFor="status-descripcion">Descripción *</label><input ref={esBase ? primerCampoRef : undefined} id="status-descripcion" name="strDescripcion" value={valores.strDescripcion} onChange={cambiar} maxLength={80} disabled={guardando} aria-invalid={Boolean(errores.strDescripcion)} aria-describedby={errores.strDescripcion ? 'status-descripcion-error' : undefined} />{errores.strDescripcion && <small id="status-descripcion-error" className="field-error" role="alert">{errores.strDescripcion}</small>}</div><footer><button type="button" className="text-button" onClick={onClose} disabled={guardando}>Cancelar</button><button type="submit" className="primary-button" disabled={guardando} aria-busy={guardando}>{guardando && <span className="spinner" aria-hidden="true" />}{guardando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Crear estatus'}</button></footer></form></section></div>;
+}
+
+/** Muestra el catálogo de estatus con paginación, orden y modales de alta/edición. @returns {React.JSX.Element} Vista de estatus. */
 export default function StatusListado() {
-  const [pagina, setPagina] = useState(0);
-  const [orden, setOrden] = useState('id');
-  const [direccion, setDireccion] = useState('asc');
-  const [resultado, setResultado] = useState(null);
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState('');
-  const [reintento, setReintento] = useState(0);
-
-  useEffect(() => {
-    let vigente = true;
-    setCargando(true); setError('');
-    statusApi.listar(pagina, 10, orden, direccion)
-      .then((datos) => { if (vigente) setResultado(datos); })
-      .catch((causa) => { if (vigente) setError(causa.message || 'No se pudo cargar el catálogo de estatus.'); })
-      .finally(() => { if (vigente) setCargando(false); });
-    return () => { vigente = false; };
-  }, [pagina, orden, direccion, reintento]);
-
+  const [pagina, setPagina] = useState(0); const [orden, setOrden] = useState('id'); const [direccion, setDireccion] = useState('asc'); const [resultado, setResultado] = useState(null); const [cargando, setCargando] = useState(true); const [error, setError] = useState(''); const [reintento, setReintento] = useState(0); const [modal, setModal] = useState(null); const [aviso, setAviso] = useState(''); const disparadorRef = useRef(null);
+  useEffect(() => { let vigente = true; setCargando(true); setError(''); statusApi.listar(pagina, 10, orden, direccion).then((datos) => { if (vigente) setResultado(datos); }).catch((causa) => { if (vigente) setError(causa.message || 'No se pudo cargar el catálogo de estatus.'); }).finally(() => { if (vigente) setCargando(false); }); return () => { vigente = false; }; }, [pagina, orden, direccion, reintento]);
   /** Alterna el orden de una columna permitida. @param {string} columna Columna a ordenar. @returns {void} */
-  function ordenarPor(columna) {
-    if (!columnasOrdenables.includes(columna)) return;
-    setPagina(0);
-    setDireccion((actual) => (orden === columna && actual === 'asc' ? 'desc' : 'asc'));
-    setOrden(columna);
-  }
-
-  /** Obtiene el indicador visual del orden actual. @param {string} columna Columna evaluada. @returns {React.JSX.Element|null} Icono o nulo. */
-  function indicadorOrden(columna) {
-    if (orden !== columna) return null;
-    return direccion === 'asc' ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />;
-  }
-
-  const estatus = resultado?.status || [];
-  const totalPaginas = resultado?.totalPaginas || 0;
-  const total = resultado?.total || 0;
-  return <main className="consulta-page"><div className="consulta-shell"><section className="consulta-card" aria-busy={cargando}>
-    <header className="consulta-heading"><div><span className="section-kicker"><ClipboardList size={16} aria-hidden="true" /> Catálogo del sistema</span><h1>Estatus</h1><p>Consulta los estados disponibles para la operación del taller.</p></div></header>
-    {error && <div className="consulta-notice consulta-error" role="alert"><span>{error}</span><button type="button" className="text-button" onClick={() => setReintento((valor) => valor + 1)}>Reintentar</button></div>}
-    {cargando && <p className="consulta-loading" role="status">Cargando estatus…</p>}
-    {!cargando && !error && estatus.length === 0 && <div className="consulta-empty" role="status"><ClipboardList size={28} aria-hidden="true" /><p>Aún no hay estatus registrados.</p></div>}
-    {!cargando && !error && estatus.length > 0 && <><div className="clientes-table-wrap"><table className="clientes-table"><caption className="sr-only">Listado paginado de estatus</caption><thead><tr>{[['id', 'ID'], ['strValor', 'Valor'], ['strDescripcion', 'Descripción']].map(([columna, etiqueta]) => <th key={columna} scope="col" aria-sort={orden === columna ? (direccion === 'asc' ? 'ascending' : 'descending') : 'none'}><button type="button" className="table-sort-button" onClick={() => ordenarPor(columna)}>{etiqueta} {indicadorOrden(columna)}</button></th>)}</tr></thead><tbody>{estatus.map((estado) => <tr key={estado.id}><td data-label="ID">{estado.id}</td><td data-label="Valor"><span className="status-badge">{estado.strValor}</span></td><td data-label="Descripción">{estado.strDescripcion}</td></tr>)}</tbody></table></div><nav className="consulta-pagination" aria-label="Paginación de estatus"><span>Página {pagina + 1} de {Math.max(totalPaginas, 1)} · {total} estatus</span><div><button type="button" className="text-button" disabled={pagina <= 0} onClick={() => setPagina((actual) => Math.max(0, actual - 1))}>Anterior</button><button type="button" className="text-button" disabled={totalPaginas === 0 || pagina >= totalPaginas - 1} onClick={() => setPagina((actual) => actual + 1)}>Siguiente</button></div></nav></>}
-  </section></div></main>;
+  function ordenarPor(columna) { if (!columnasOrdenables.includes(columna)) return; setPagina(0); setDireccion((actual) => (orden === columna && actual === 'asc' ? 'desc' : 'asc')); setOrden(columna); }
+  /** Abre el modal y conserva su disparador. @param {string} modo Operación. @param {object} estado Estatus opcional. @param {HTMLButtonElement} disparador Botón origen. @returns {void} */
+  function abrirModal(modo, estado, disparador) { disparadorRef.current = disparador; setAviso(''); setModal({ modo, estado }); }
+  /** Cierra el diálogo y devuelve el foco. @returns {void} */
+  function cerrarModal() { setModal(null); window.setTimeout(() => disparadorRef.current?.focus(), 0); }
+  /** Notifica éxito y recarga la página actual. @param {string} mensaje Confirmación. @returns {void} */
+  function guardarExito(mensaje) { setAviso(mensaje); setReintento((valor) => valor + 1); }
+  /** Obtiene el icono del orden actual. @param {string} columna Columna evaluada. @returns {React.JSX.Element|null} Icono o nulo. */
+  function indicadorOrden(columna) { if (orden !== columna) return null; return direccion === 'asc' ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />; }
+  const estatus = resultado?.status || []; const totalPaginas = resultado?.totalPaginas || 0; const total = resultado?.total || 0;
+  return <main className="consulta-page"><div className="consulta-shell"><section className="consulta-card" aria-busy={cargando}><header className="consulta-heading"><div><span className="section-kicker"><ClipboardList size={16} aria-hidden="true" /> Catálogo del sistema</span><h1>Estatus</h1><p>Consulta y administra los estados disponibles para la operación del taller.</p></div><button type="button" className="primary-button inline-button" onClick={(evento) => abrirModal('crear', null, evento.currentTarget)}><Plus size={18} aria-hidden="true" />Nuevo estatus</button></header>{aviso && <div className="notice notice-success" role="status">{aviso}</div>}{error && <div className="consulta-notice consulta-error" role="alert"><span>{error}</span><button type="button" className="text-button" onClick={() => setReintento((valor) => valor + 1)}>Reintentar</button></div>}{cargando && <p className="consulta-loading" role="status">Cargando estatus…</p>}{!cargando && !error && estatus.length === 0 && <div className="consulta-empty" role="status"><ClipboardList size={28} aria-hidden="true" /><p>Aún no hay estatus registrados.</p></div>}{!cargando && !error && estatus.length > 0 && <><div className="clientes-table-wrap"><table className="clientes-table"><caption className="sr-only">Listado paginado de estatus</caption><thead><tr>{[['id', 'ID'], ['strValor', 'Valor'], ['strDescripcion', 'Descripción']].map(([columna, etiqueta]) => <th key={columna} scope="col" aria-sort={orden === columna ? (direccion === 'asc' ? 'ascending' : 'descending') : 'none'}><button type="button" className="table-sort-button" onClick={() => ordenarPor(columna)}>{etiqueta} {indicadorOrden(columna)}</button></th>)}<th scope="col">Acciones</th></tr></thead><tbody>{estatus.map((estado) => <tr key={estado.id}><td data-label="ID">{estado.id}</td><td data-label="Valor"><span className="status-badge">{estado.strValor}</span></td><td data-label="Descripción">{estado.strDescripcion}</td><td data-label="Acciones"><button type="button" className="icon-button row-action" title="Editar estatus" aria-label={`Editar ${estado.strValor}`} onClick={(evento) => abrirModal('editar', estado, evento.currentTarget)}><Pencil size={18} /><span className="action-label">Editar</span></button></td></tr>)}</tbody></table></div><nav className="consulta-pagination" aria-label="Paginación de estatus"><span>Página {pagina + 1} de {Math.max(totalPaginas, 1)} · {total} estatus</span><div><button type="button" className="text-button" disabled={pagina <= 0} onClick={() => setPagina((actual) => Math.max(0, actual - 1))}>Anterior</button><button type="button" className="text-button" disabled={totalPaginas === 0 || pagina >= totalPaginas - 1} onClick={() => setPagina((actual) => actual + 1)}>Siguiente</button></div></nav></>}</section></div><StatusModal modal={modal} onClose={cerrarModal} onSaved={guardarExito} openerRef={disparadorRef} /></main>;
 }
