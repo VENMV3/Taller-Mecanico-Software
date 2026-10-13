@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Siembra manual e idempotente de los mismos diez clientes E2E mediante la API; no se ejecuta automáticamente.
+set -euo pipefail
+: "${TALLER_API_URL:=http://localhost:8080/api}"
+: "${TALLER_EMAIL:?Define TALLER_EMAIL}"
+: "${TALLER_PASSWORD:?Define TALLER_PASSWORD}"
+: "${TALLER_NORTE_ID:?Define TALLER_NORTE_ID}"
+: "${TALLER_CENTRO_ID:?Define TALLER_CENTRO_ID}"
+: "${DEMO_FOTO:?Define DEMO_FOTO con una imagen válida menor a 15 MB}"
+[[ -f "$DEMO_FOTO" ]] || { echo "No existe DEMO_FOTO" >&2; exit 1; }
+TOKEN="$(curl -fsS -H 'Content-Type: application/json' -d "{\"email\":\"$TALLER_EMAIL\",\"password\":\"$TALLER_PASSWORD\"}" "$TALLER_API_URL/auth/login" | node -pe 'JSON.parse(fs.readFileSync(0,"utf8")).token')"
+node - "$TALLER_NORTE_ID" "$TALLER_CENTRO_ID" <<'NODE' | while IFS= read -r linea; do
+const [norte,centro]=process.argv.slice(2); const hoy=new Date(); const datos=[
+['María Fernanda López Ruiz','Elena Ruiz','1984-03-14','5510010001','5510020001','maria.lopez@familia.mx','maria.lopez@oficina.mx','03100','Del Valle Centro','Benito Juárez','Ciudad de México'],['José Antonio Hernández Soto','Lucía Soto','1972-07-09','3310010002','3310020002','jose.hernandez@correo.mx','','44100','Centro','Guadalajara','Jalisco'],['Ana Sofía Martínez León','Pedro León','1991-11-22','8110010003','8110020003','ana.martinez@hogar.mx','ana.martinez@empresa.mx','64000','Centro','Monterrey','Nuevo León'],['Carlos Eduardo Ramírez Vega','Patricia Vega','1968-01-30','5510010004','5510020004','carlos.ramirez@correo.mx','','03100','Del Valle Centro','Benito Juárez','Ciudad de México'],['Verónica García Mora','Daniel Mora','1988-05-18','3310010005','3310020005','veronica.garcia@familia.mx','veronica.garcia@trabajo.mx','44100','Centro','Guadalajara','Jalisco'],['Miguel Ángel Torres Díaz','Sandra Díaz','1975-09-02','8110010006','8110020006','miguel.torres@correo.mx','','64000','Centro','Monterrey','Nuevo León'],['Laura Beatriz Sánchez Cruz','Jorge Cruz','1996-12-11','5510010007','5510020007','laura.sanchez@hogar.mx','laura.sanchez@empresa.mx','03100','Del Valle Centro','Benito Juárez','Ciudad de México'],['Roberto Silva Pineda','Adriana Pineda','1963-04-25','3310010008','3310020008','roberto.silva@correo.mx','','44100','Centro','Guadalajara','Jalisco'],['Gabriela Flores Campos','Héctor Campos','2001-08-16','8110010009','8110020009','gabriela.flores@familia.mx','gabriela.flores@trabajo.mx','64000','Centro','Monterrey','Nuevo León'],['Daniel Alberto Ortega Núñez','Mónica Núñez','1980-06-07','5510010010','5510020010','daniel.ortega@correo.mx','','03100','Del Valle Centro','Benito Juárez','Ciudad de México']];
+for(const [i,d] of datos.entries()){const f=new Date(d[2]+'T00:00:00');let e=hoy.getFullYear()-f.getFullYear();if(hoy<new Date(hoy.getFullYear(),f.getMonth(),f.getDate()))e--;console.log(JSON.stringify({nombreCompleto:d[0],contactoAlternativo:d[1],edad:e,fechaNacimiento:d[2],telefonoPersonal:d[3],telefonoTrabajo:d[4],email:d[5],emailTrabajo:d[6]||null,direccion:{calle:`Avenida del Servicio ${20+i}`,colonia:d[8],municipio:d[9],estado:d[10],codigoPostal:d[7]},tallerId:i<5?Number(norte):Number(centro)}));}
+NODE
+  indice="${indice:-0}"; indice=$((indice+1))
+  curl -fsS -X POST "$TALLER_API_URL/clientes" -H "Authorization: Bearer $TOKEN" -H "Idempotency-Key: demo-clientes-$indice" -F "datos=$linea;type=application/json" -F "fotografia=@$DEMO_FOTO" >/dev/null
+  echo "Cliente demo $indice procesado"
+done
