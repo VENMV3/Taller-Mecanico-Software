@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Eye, Pencil, Search, UserPlus, Users } from 'lucide-react';
 import './clientes-consulta.css';
+import ClienteEdicionModal from './ClienteEdicionModal';
 
 /** Ejecuta GET privado; parámetros URL y signal; devuelve JSON o lanza Error HTTP. */
 async function consultar(url, signal) {
@@ -42,7 +43,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
   const [error, setError] = useState(''); const [cargando, setCargando] = useState(true);
   const [intento, setIntento] = useState(0); const [talleres, setTalleres] = useState([]); const [tallerId, setTallerId] = useState('');
   const [orden, setOrden] = useState('nombreCompleto'); const [direccion, setDireccion] = useState('asc'); const admin = user?.rol === 'ADMINISTRADOR_SISTEMA';
-  const [editando, setEditando] = useState(false); const [edicion, setEdicion] = useState({}); const [guardando, setGuardando] = useState(false); const [confirmarSuspension, setConfirmarSuspension] = useState(false); const [aviso, setAviso] = useState(''); const [abrirEnEdicion,setAbrirEnEdicion]=useState(false);
+  const [modalEdicion, setModalEdicion] = useState(null); const [aviso, setAviso] = useState(''); const [abrirEnEdicion,setAbrirEnEdicion]=useState(false); const disparadorEdicionRef = useRef(null);
   useEffect(() => { consultar('/api/talleres?pagina=0&tamanio=10').then(x => { setTalleres(x.talleres || []); if (admin && x.talleres?.[0]) setTallerId(String(x.talleres[0].id)); }).catch(() => setTalleres([])); }, [admin]);
   useEffect(() => {
     const controller = new AbortController(); setCargando(true); setError(''); setDetalle(null);
@@ -60,18 +61,16 @@ export default function ClientesConsulta({ volver, registrar, user }) {
   }, [pagina, busqueda, id, intento, tallerId, orden, direccion, admin]);
   /** Aplica búsqueda y vuelve a primera página; recibe submit; devuelve void. */
   function buscar(event) { event.preventDefault(); setPagina(0); setBusqueda(texto.trim()); }
-  /** Abre el formulario con los datos actuales del expediente. @returns {void}. */
-  function abrirEdicion(){setEdicion({...detalle,tallerId:String(detalle.tallerId)});setEditando(true);setAviso('');}
+  /** Abre el modal con los datos actuales del expediente. @param {HTMLButtonElement} disparador Botón que abre el diálogo. @returns {void}. */
+  function abrirEdicion(disparador){disparadorEdicionRef.current=disparador;setModalEdicion({...detalle,tallerId:String(detalle.tallerId)});setAviso('');}
   /** Abre la ficha o su edición sin cambiar la autorización del servidor. @param {number} clienteId identificador del cliente. @param {boolean} editar indica si debe mostrarse el formulario. @returns {void}. */
-  function abrirCliente(clienteId,editar=false){setAbrirEnEdicion(editar);setId(clienteId);}
+  function abrirCliente(clienteId,editar=false,disparador=null){if(disparador)disparadorEdicionRef.current=disparador;setAbrirEnEdicion(editar);setId(clienteId);}
   /** Activa edición una vez cargada la ficha solicitada desde la acción de lápiz. @returns {void}. */
-  useEffect(()=>{if(detalle&&abrirEnEdicion){setEdicion({...detalle,tallerId:String(detalle.tallerId)});setEditando(true);setAviso('');setAbrirEnEdicion(false);}},[detalle,abrirEnEdicion]);
-  /** Guarda edición multipart e impide reenvíos mientras la API responde. @param {Event} event envío. @returns {Promise<void>}. */
-  async function guardarEdicion(event){event.preventDefault();setGuardando(true);setAviso('');try{const d=new FormData();const datos={...edicion,edad:Number(edicion.edad),tallerId:admin?Number(edicion.tallerId):null,direccion:{calle:edicion.calle,colonia:edicion.colonia,municipio:edicion.municipio,estado:edicion.estado,codigoPostal:edicion.codigoPostal}};d.append('datos',new Blob([JSON.stringify(datos)],{type:'application/json'}));const respuesta=await fetch(`/api/clientes/${id}${admin?`?tallerId=${tallerId}`:''}`,{method:'PUT',headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`,'Idempotency-Key':crypto.randomUUID()},body:d});const cuerpo=await respuesta.json();if(!respuesta.ok)throw Error(cuerpo.message||'No fue posible actualizar el cliente.');setAviso('Cliente actualizado');setEditando(false);setIntento(x=>x+1);}catch(e){setAviso(e.message);}finally{setGuardando(false);}}
-  /** Suspende con confirmación explícita; la operación del servidor es idempotente. @returns {Promise<void>}. */
-  async function suspender(){setGuardando(true);try{const respuesta=await fetch(`/api/clientes/${id}/suspender${admin?`?tallerId=${tallerId}`:''}`,{method:'POST',headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`}});const cuerpo=await respuesta.json();if(!respuesta.ok)throw Error(cuerpo.message||'No se pudo suspender el cliente.');setAviso(cuerpo.mensaje);setConfirmarSuspension(false);setIntento(x=>x+1);}catch(e){setAviso(e.message);}finally{setGuardando(false);}}
-  /** Reactiva un expediente suspendido sin crear otro registro. @returns {Promise<void>}. */
-  async function reactivar(){setGuardando(true);try{const respuesta=await fetch(`/api/clientes/${id}/reactivar${admin?`?tallerId=${tallerId}`:''}`,{method:'POST',headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`}});const cuerpo=await respuesta.json();if(!respuesta.ok)throw Error(cuerpo.message||'No se pudo reactivar el cliente.');setAviso(cuerpo.mensaje);setIntento(x=>x+1);}catch(e){setAviso(e.message);}finally{setGuardando(false);}}
+  useEffect(()=>{if(detalle&&abrirEnEdicion){setModalEdicion({...detalle,tallerId:String(detalle.tallerId)});setAviso('');setAbrirEnEdicion(false);}},[detalle,abrirEnEdicion]);
+  /** Cierra el modal y devuelve el foco a su acción de origen. @returns {void}. */
+  function cerrarEdicion(){setModalEdicion(null);window.setTimeout(()=>disparadorEdicionRef.current?.focus(),0);}
+  /** Actualiza la fila y detalle locales sin recargar la página. @param {object} actualizado Cliente devuelto por API. @returns {void}. */
+  function clienteActualizado(actualizado){const completo={...actualizado,...actualizado.direccion};setDetalle(completo);setResultado(anterior=>anterior?{...anterior,clientes:anterior.clientes.map(cliente=>cliente.id===actualizado.id?{...cliente,nombreCompleto:actualizado.nombreCompleto,telefonoPersonal:actualizado.telefonoPersonal,email:actualizado.email,municipio:actualizado.direccion.municipio,tallerId:actualizado.tallerId,taller:actualizado.taller}:cliente)}:anterior);setAviso(actualizado.mensaje||'Cliente actualizado');}
   return <main className="consulta-page"><div className="consulta-shell">
     <button className="text-button" onClick={() => id ? setId(null) : volver()}><ArrowLeft size={18} />{id ? 'Volver al listado' : 'Volver al panel'}</button>
     <section className="consulta-card" aria-busy={cargando}>
@@ -94,16 +93,15 @@ export default function ClientesConsulta({ volver, registrar, user }) {
             <tbody>{resultado.clientes.map(cliente => <tr key={cliente.id}>
               <td data-label="Cliente"><div className="cliente-identity"><FotoCliente id={cliente.id} nombre={cliente.nombreCompleto} tallerId={admin?tallerId:null} /><strong>{cliente.nombreCompleto}</strong></div></td>
               <td data-label="Teléfono personal">{cliente.telefonoPersonal}</td><td data-label="E-mail">{cliente.email}</td><td data-label="Municipio">{cliente.municipio}</td>
-              <td data-label="Estatus"><span className="consulta-badge">{cliente.estatus==='SUSPENDIDO'?'Suspendido':'Activo'}</span></td><td>{cliente.taller}</td>
-              <td data-label="Acciones"><div className="client-action-group"><button type="button" className="icon-button row-action" title="Ver detalle" aria-label={`Ver detalle de ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id)}><Eye size={18}/><span className="action-label">Ver</span></button><button type="button" className="icon-button row-action" title="Editar cliente" aria-label={`Editar ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id,true)}><Pencil size={18}/><span className="action-label">Editar</span></button></div></td>
+              <td data-label="Estatus"><span className="consulta-badge">{cliente.estatus==='SUS'?'Suspendido':cliente.estatus==='CAN'?'Cancelado':'Activo'}</span></td><td>{cliente.taller}</td>
+              <td data-label="Acciones"><div className="client-action-group"><button type="button" className="icon-button row-action" title="Ver detalle" aria-label={`Ver detalle de ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id)}><Eye size={18}/><span className="action-label">Ver</span></button><button type="button" className="icon-button row-action" title="Editar cliente" aria-label={`Editar ${cliente.nombreCompleto}`} onClick={(evento) => abrirCliente(cliente.id,true,event.currentTarget)}><Pencil size={18}/><span className="action-label">Editar</span></button></div></td>
             </tr>)}</tbody></table>}
         <nav className="consulta-pagination" aria-label="Paginación de clientes"><span>{resultado.total} clientes · Página {pagina + 1} de {Math.max(1, resultado.paginas)}</span>
           <div><button className="text-button" disabled={pagina === 0} onClick={() => setPagina(pagina - 1)}>Anterior</button>
           <button className="text-button" disabled={pagina + 1 >= resultado.paginas} onClick={() => setPagina(pagina + 1)}>Siguiente</button></div></nav>
       </>}
-      {!cargando && !error && detalle && <><div className="detalle-identity"><FotoCliente id={detalle.id} nombre={detalle.nombreCompleto} tallerId={admin?tallerId:null} /><h2>{detalle.nombreCompleto}</h2><span className="consulta-badge">{detalle.estatus==='SUSPENDIDO'?'Suspendido':'Activo'}</span></div>{aviso&&<div className="notice notice-success" role="status">{aviso}</div>}
-        {!editando && <div className="consulta-actions"><button className="primary-button inline-button" onClick={abrirEdicion}>Editar datos</button>{admin&&detalle.estatus!=='SUSPENDIDO'&&<button className="text-button button-danger" onClick={()=>setConfirmarSuspension(true)}>Suspender cliente</button>}{admin&&detalle.estatus==='SUSPENDIDO'&&<button className="primary-button inline-button" disabled={guardando} onClick={reactivar}>Reactivar cliente</button>}</div>}
-        {editando&&<form className="field-grid" onSubmit={guardarEdicion}>{[['nombreCompleto','Nombre completo'],['contactoAlternativo','Contacto alternativo'],['edad','Edad'],['fechaNacimiento','Fecha de nacimiento'],['telefonoPersonal','Teléfono personal'],['telefonoTrabajo','Teléfono de trabajo'],['email','E-mail'],['emailTrabajo','E-mail de trabajo'],['calle','Calle'],['colonia','Colonia'],['municipio','Municipio'],['estado','Estado'],['codigoPostal','Código postal']].map(([campo,label])=><div className="form-field" key={campo}><label htmlFor={`editar-${campo}`}>{label}</label><input id={`editar-${campo}`} required={campo!=='emailTrabajo'} type={campo==='fechaNacimiento'?'date':campo==='edad'?'number':campo.includes('email')?'email':'text'} value={edicion[campo]||''} onChange={e=>setEdicion({...edicion,[campo]:e.target.value})}/></div>)}{admin&&<div className="form-field"><label htmlFor="editar-taller">Taller</label><select id="editar-taller" value={edicion.tallerId||''} onChange={e=>setEdicion({...edicion,tallerId:e.target.value})}>{talleres.map(t=><option key={t.id} value={t.id}>{t.nombre}</option>)}</select></div>}<div className="consulta-actions"><button className="primary-button" disabled={guardando}>{guardando?'Guardando…':'Guardar cambios'}</button><button type="button" className="text-button" onClick={()=>setEditando(false)}>Cancelar</button></div></form>}
+      {!cargando && !error && detalle && <><div className="detalle-identity"><FotoCliente id={detalle.id} nombre={detalle.nombreCompleto} tallerId={admin?tallerId:null} /><h2>{detalle.nombreCompleto}</h2><span className="consulta-badge">{detalle.estatus==='SUS'?'Suspendido':detalle.estatus==='CAN'?'Cancelado':'Activo'}</span></div>{aviso&&<div className="notice notice-success" role="status">{aviso}</div>}
+        <div className="consulta-actions"><button className="primary-button inline-button" onClick={(evento)=>abrirEdicion(evento.currentTarget)}>Editar datos</button></div>
         <dl className="detalle-grid">{[
           ['Nombre completo', detalle.nombreCompleto], ['Contacto alternativo', detalle.contactoAlternativo],
           ['Edad registrada', detalle.edad], ['Fecha de nacimiento', detalle.fechaNacimiento],
@@ -111,7 +109,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
           ['E-mail', detalle.email], ...(detalle.emailTrabajo ? [['E-mail de trabajo', detalle.emailTrabajo]] : []),
           ['Calle', detalle.calle], ['Colonia', detalle.colonia], ['Municipio', detalle.municipio],
           ['Estado', detalle.estado], ['Código postal', detalle.codigoPostal],
-        ].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>{confirmarSuspension&&<div className="notice notice-error" role="alertdialog" aria-modal="true"><p>¿Confirmas suspender a este cliente? El expediente seguirá guardado.</p><button className="primary-button button-danger" disabled={guardando} aria-busy={guardando} onClick={suspender}>{guardando?<><span className="spinner" aria-hidden="true"/>Suspendiendo…</>:'Confirmar suspensión'}</button><button className="text-button" disabled={guardando} onClick={()=>setConfirmarSuspension(false)}>Cancelar</button></div>}</>}
+        ].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></>}
     </section>
-  </div></main>;
+  </div><ClienteEdicionModal cliente={modalEdicion} talleres={talleres} admin={admin} tallerId={tallerId} onClose={cerrarEdicion} onSaved={clienteActualizado} onFatal={(mensaje)=>{setError(mensaje);cerrarEdicion();}} openerRef={disparadorEdicionRef}/></main>;
 }

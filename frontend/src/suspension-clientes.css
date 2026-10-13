@@ -1,0 +1,2 @@
+/** Variantes visuales de la bandeja de suspensión, derivadas de los colores existentes. */
+.suspension-badge--suspendido{background:color-mix(in srgb,var(--danger,#ef4444) 20%,transparent);border-color:color-mix(in srgb,var(--danger,#ef4444) 55%,transparent);color:#fecaca}.clientes-table td small{display:block;margin-top:.2rem;color:var(--muted,#94a3b8)}

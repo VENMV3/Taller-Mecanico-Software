@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "skipped",
+  "type": "architecture",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.json",
+    "sha256": "660fa6cdc4914e1c2d39bb112ea875d03f6934780cdb0dd687d4749eb3865933",
+    "bytes": 5354
+  },
+  "artifact": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+    "sha256": "30a8867e9e3091ef7c47a04a37b1f31cd90a91b9fb9bc7e8286ae1bc937a2299",
+    "bytes": 775099
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "skipped"
+  },
+  "failedStage": "browser-check",
+  "diagnostics": [
+    {
+      "code": "viewer/chrome-unavailable",
+      "severity": "warning",
+      "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+      "subject": {
+        "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html"
+      },
+      "evidence": {
+        "executable": null
+      },
+      "supportedFixes": [
+        "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.finalize.json",
+    "summaryReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.finalize-summary.json",
+    "browserCheckReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.browser-check.json"
+  },
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-13T02:49:59.518Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  },
+  "visualReview": "not-requested",
+  "durationMs": 3594
+}

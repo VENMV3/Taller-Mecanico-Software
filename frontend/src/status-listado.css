@@ -1,0 +1,8 @@
+/** Estilos del diálogo de creación y edición de estatus; reutilizan tokens globales del portal. */
+.status-modal-backdrop{position:fixed;inset:0;z-index:var(--z-modal,50);display:grid;place-items:center;padding:1rem;background:rgba(2,6,23,.68);backdrop-filter:blur(3px)}
+.status-modal{width:min(100%,34rem);max-height:calc(100vh - 2rem);overflow:auto;border:1px solid var(--border,rgba(148,163,184,.25));border-radius:var(--radius-lg,1rem);padding:1.5rem;background:var(--surface,#0f172a);box-shadow:0 24px 60px rgba(0,0,0,.42)}
+.status-modal>header,.status-modal footer{display:flex;align-items:center;justify-content:space-between;gap:.75rem}.status-modal>header{margin-bottom:.5rem}.status-modal>header h2{margin:0}.status-modal>p{margin:.25rem 0 1.25rem;color:var(--muted,#94a3b8)}
+.status-modal form{display:grid;gap:1rem}.status-modal footer{margin-top:.5rem;justify-content:flex-end}.status-modal .notice{margin:0 0 1rem}
+.status-action-group{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem}.status-base-help{flex-basis:100%;color:var(--muted,#94a3b8);font-size:.72rem}
+@media (max-width:480px){.status-modal{padding:1.1rem}.status-modal footer{align-items:stretch;flex-direction:column-reverse}.status-modal footer button{width:100%}}
+@media (prefers-reduced-motion:no-preference){.status-modal{animation:status-modal-in .18s ease-out}@keyframes status-modal-in{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}}
