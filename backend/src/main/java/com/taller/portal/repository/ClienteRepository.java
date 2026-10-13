@@ -18,4 +18,6 @@ public interface ClienteRepository extends JpaRepository<Cliente,Long>{
  @Query("select new com.taller.portal.dto.AdministracionClienteDtos$Detalle(c.id,c.nombreCompleto,c.contactoAlternativo,c.edad,c.fechaNacimiento,c.telefonoPersonal,c.telefonoTrabajo,c.email,c.emailTrabajo,c.calle,c.colonia,c.municipio,c.estado,c.codigoPostal,c.taller.id,c.taller.nombre,c.status.strValor) from Cliente c where c.id=:id and c.taller.id=:tallerId and c.isDeleted=false") Optional<Detalle> detallePorTaller(@Param("id") Long id,@Param("tallerId") Long tallerId);
  @Query("select c from Cliente c where c.id=:id and c.taller.id=:tallerId") Optional<Cliente> entidadPorTaller(@Param("id") Long id,@Param("tallerId") Long tallerId);
  @Query("select c.fotografiaRuta from Cliente c where c.id=:id and c.taller.id=:tallerId") Optional<String> rutaFotoPorTaller(@Param("id") Long id,@Param("tallerId") Long tallerId);
+ /** Proyección mínima de clientes activos para seleccionar propietario de vehículo sin incluir soft-deleted. */
+ @Query("select c from Cliente c where c.taller.id=:tallerId and c.isDeleted=false and c.status.strValor='ACT' and lower(c.nombreCompleto) like :patron order by c.nombreCompleto") List<Cliente> activosParaVehiculo(@Param("tallerId") Long tallerId,@Param("patron") String patron,Pageable limite);
 }

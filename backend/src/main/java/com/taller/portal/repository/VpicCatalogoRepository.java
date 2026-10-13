@@ -8,4 +8,6 @@ public interface VpicCatalogoRepository extends JpaRepository<VpicMarca,Long> {
  /** @param marcaId marca local @param prefijo texto canónico inicial @return hasta veinte modelos ordenados. */
  @Query("select m from VpicModelo m where m.marca.id=:marcaId and m.nombre like concat(:prefijo,'%') order by m.nombre") List<VpicModelo> consultarModelos(@Param("marcaId") Long marcaId,@Param("prefijo") String prefijo,PageRequest limite);
  /** @param marcaId marca local @param prefijo texto canónico inicial @return hasta veinte modelos ordenados. */ default List<VpicModelo> buscarModelos(Long marcaId,String prefijo){return consultarModelos(marcaId,prefijo,PageRequest.of(0,20));}
+ /** @param nombre valor canónico de catálogo. @return marca coincidente, si fue importada. */ Optional<VpicMarca> findByNombre(String nombre);
+ /** @param marcaId marca local @param nombre modelo canónico. @return modelo coincidente, si fue importado. */ @Query("select m from VpicModelo m where m.marca.id=:marcaId and m.nombre=:nombre") Optional<VpicModelo> findByMarcaIdAndNombre(@Param("marcaId") Long marcaId,@Param("nombre") String nombre);
 }
