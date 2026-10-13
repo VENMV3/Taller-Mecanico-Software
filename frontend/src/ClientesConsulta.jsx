@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowLeft, Eye, Pencil, Search, UserPlus, Users } from 'lucide-react';
+import { ArrowLeft, Eye, Pencil, RotateCcw, Search, UserPlus, UserRoundX, Users } from 'lucide-react';
 import './clientes-consulta.css';
 import ClienteEdicionModal from './ClienteEdicionModal';
+import ClienteEstadoModal from './ClienteEstadoModal';
 
 /** Ejecuta GET privado; parámetros URL y signal; devuelve JSON o lanza Error HTTP. */
 async function consultar(url, signal) {
@@ -36,21 +37,21 @@ function FotoCliente({ id, nombre, tallerId }) {
 }
 
 /** Listado y detalle de solo lectura; recibe callbacks volver/registrar; devuelve JSX. Los errores GET son visibles. */
-export default function ClientesConsulta({ volver, registrar, user }) {
+export default function ClientesConsulta({ volver, registrar, user, filtroInicial = 'ACTIVOS' }) {
   const [texto, setTexto] = useState(''); const [busqueda, setBusqueda] = useState('');
   const [pagina, setPagina] = useState(0); const [id, setId] = useState(null);
   const [resultado, setResultado] = useState(null); const [detalle, setDetalle] = useState(null);
   const [error, setError] = useState(''); const [cargando, setCargando] = useState(true);
   const [intento, setIntento] = useState(0); const [talleres, setTalleres] = useState([]); const [tallerId, setTallerId] = useState('');
-  const [orden, setOrden] = useState('nombreCompleto'); const [direccion, setDireccion] = useState('asc'); const admin = user?.rol === 'ADMINISTRADOR_SISTEMA';
-  const [modalEdicion, setModalEdicion] = useState(null); const [aviso, setAviso] = useState(''); const [abrirEnEdicion,setAbrirEnEdicion]=useState(false); const disparadorEdicionRef = useRef(null);
+  const [orden, setOrden] = useState('nombreCompleto'); const [direccion, setDireccion] = useState('asc'); const admin = user?.rol === 'ADMINISTRADOR_SISTEMA'; const [filtroEstatus,setFiltroEstatus]=useState(filtroInicial);
+  const [modalEdicion, setModalEdicion] = useState(null); const [modalEstado,setModalEstado]=useState(null); const [accionEstado,setAccionEstado]=useState('suspender'); const [aviso, setAviso] = useState(''); const [abrirEnEdicion,setAbrirEnEdicion]=useState(false); const disparadorEdicionRef = useRef(null); const disparadorEstadoRef=useRef(null);
   useEffect(() => { consultar('/api/talleres?pagina=0&tamanio=10').then(x => { setTalleres(x.talleres || []); if (admin && x.talleres?.[0]) setTallerId(String(x.talleres[0].id)); }).catch(() => setTalleres([])); }, [admin]);
   useEffect(() => {
     const controller = new AbortController(); setCargando(true); setError(''); setDetalle(null);
     /** Solicita la página o detalle seleccionado; devuelve Promise<void>; captura errores para la alerta. */
     async function cargar() {
       try {
-        const params = new URLSearchParams({ pagina: String(pagina), tamanio: '10', busqueda, orden, direccion }); if (admin && tallerId) params.set('tallerId', tallerId);
+        const params = new URLSearchParams({ pagina: String(pagina), tamanio: '10', busqueda, orden, direccion }); if (admin && tallerId) { params.set('tallerId', tallerId); params.set('estatus',filtroEstatus); }
         if (admin && !tallerId) return;
         const data = await consultar(id ? `/api/clientes/${id}?${params}` : `/api/clientes?${params}`, controller.signal);
         if (!controller.signal.aborted) { if (id) setDetalle(data); else setResultado(data); }
@@ -58,7 +59,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
       finally { if (!controller.signal.aborted) setCargando(false); }
     }
     cargar(); return () => controller.abort();
-  }, [pagina, busqueda, id, intento, tallerId, orden, direccion, admin]);
+  }, [pagina, busqueda, id, intento, tallerId, orden, direccion, admin, filtroEstatus]);
   /** Aplica búsqueda y vuelve a primera página; recibe submit; devuelve void. */
   function buscar(event) { event.preventDefault(); setPagina(0); setBusqueda(texto.trim()); }
   /** Abre el modal con los datos actuales del expediente. @param {HTMLButtonElement} disparador Botón que abre el diálogo. @returns {void}. */
@@ -71,6 +72,10 @@ export default function ClientesConsulta({ volver, registrar, user }) {
   function cerrarEdicion(){setModalEdicion(null);window.setTimeout(()=>disparadorEdicionRef.current?.focus(),0);}
   /** Actualiza la fila y detalle locales sin recargar la página. @param {object} actualizado Cliente devuelto por API. @returns {void}. */
   function clienteActualizado(actualizado){const completo={...actualizado,...actualizado.direccion};setDetalle(completo);setResultado(anterior=>anterior?{...anterior,clientes:anterior.clientes.map(cliente=>cliente.id===actualizado.id?{...cliente,nombreCompleto:actualizado.nombreCompleto,telefonoPersonal:actualizado.telefonoPersonal,email:actualizado.email,municipio:actualizado.direccion.municipio,tallerId:actualizado.tallerId,taller:actualizado.taller}:cliente)}:anterior);setAviso(actualizado.mensaje||'Cliente actualizado');}
+  /** Abre la confirmación de cambio de estatus y conserva el foco origen. @param {object} cliente fila elegida. @param {'suspender'|'reactivar'} accion acción administrativa. @param {HTMLButtonElement} boton disparador. @returns {void}. */
+  function abrirEstado(cliente,accion,boton){disparadorEstadoRef.current=boton;setAccionEstado(accion);setModalEstado(cliente);setAviso('');}
+  /** Cierra el diálogo de estado y devuelve foco. @returns {void}. */ function cerrarEstado(){setModalEstado(null);window.setTimeout(()=>disparadorEstadoRef.current?.focus(),0);}
+  /** Recarga la página actual manteniendo filtros y orden. @param {string} mensaje confirmación. @returns {void}. */ function estadoActualizado(mensaje){setAviso(mensaje);setIntento(valor=>valor+1);}
   return <main className="consulta-page"><div className="consulta-shell">
     <button className="text-button" onClick={() => id ? setId(null) : volver()}><ArrowLeft size={18} />{id ? 'Volver al listado' : 'Volver al panel'}</button>
     <section className="consulta-card" aria-busy={cargando}>
@@ -83,7 +88,7 @@ export default function ClientesConsulta({ volver, registrar, user }) {
         <label htmlFor="clientes-busqueda">Buscar por nombre, teléfono o e-mail</label>
         <div><input id="clientes-busqueda" value={texto} maxLength={120} onChange={event => setTexto(event.target.value)} placeholder="Escribe el dato del cliente" />
         <button className="primary-button inline-button" type="submit"><Search size={18} />Buscar</button></div>
-      </form>{admin && <div className="form-field"><label htmlFor="filtro-taller">Taller</label><select id="filtro-taller" value={tallerId} onChange={e => { setPagina(0); setTallerId(e.target.value); }}>{talleres.map(t => <option key={t.id} value={t.id}>{t.nombre}</option>)}</select></div>}<p className="consulta-muted consulta-note">Ordena el directorio por nombre, estatus o taller.</p></>}
+      </form>{admin && <div className="field-grid"><div className="form-field"><label htmlFor="filtro-taller">Taller</label><select id="filtro-taller" value={tallerId} onChange={e => { setPagina(0); setTallerId(e.target.value); }}>{talleres.map(t => <option key={t.id} value={t.id}>{t.nombre}</option>)}</select></div><div className="form-field"><label htmlFor="filtro-estatus">Estatus</label><select id="filtro-estatus" value={filtroEstatus} onChange={e=>{setPagina(0);setFiltroEstatus(e.target.value);}}><option value="ACTIVOS">Activos</option><option value="SUSPENDIDOS">Suspendidos</option><option value="TODOS">Todos</option></select></div></div>}<p className="consulta-muted consulta-note">Ordena el directorio por nombre, estatus o taller.</p></>}
       {error && <div className="notice notice-error" role="alert">{error}<button className="text-button" onClick={() => setIntento(intento + 1)}>Reintentar</button></div>}
       {cargando && <p role="status" className="consulta-loading"><span className="spinner" aria-hidden="true" />Cargando clientes…</p>}
       {!cargando && !error && !id && resultado && <>
@@ -93,8 +98,8 @@ export default function ClientesConsulta({ volver, registrar, user }) {
             <tbody>{resultado.clientes.map(cliente => <tr key={cliente.id}>
               <td data-label="Cliente"><div className="cliente-identity"><FotoCliente id={cliente.id} nombre={cliente.nombreCompleto} tallerId={admin?tallerId:null} /><strong>{cliente.nombreCompleto}</strong></div></td>
               <td data-label="Teléfono personal">{cliente.telefonoPersonal}</td><td data-label="E-mail">{cliente.email}</td><td data-label="Municipio">{cliente.municipio}</td>
-              <td data-label="Estatus"><span className="consulta-badge">{cliente.estatus==='SUS'?'Suspendido':cliente.estatus==='CAN'?'Cancelado':'Activo'}</span></td><td>{cliente.taller}</td>
-              <td data-label="Acciones"><div className="client-action-group"><button type="button" className="icon-button row-action" title="Ver detalle" aria-label={`Ver detalle de ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id)}><Eye size={18}/><span className="action-label">Ver</span></button><button type="button" className="icon-button row-action" title="Editar cliente" aria-label={`Editar ${cliente.nombreCompleto}`} onClick={(evento) => abrirCliente(cliente.id,true,event.currentTarget)}><Pencil size={18}/><span className="action-label">Editar</span></button></div></td>
+              <td data-label="Estatus"><span className={`consulta-badge ${cliente.estatusCodigo==='SUS'?'suspension-badge suspension-badge--suspendido':''}`}>{cliente.estatusDescripcion|| (cliente.estatusCodigo==='SUS'?'Suspendido':'Activo')}</span></td><td>{cliente.taller}</td>
+              <td data-label="Acciones"><div className="client-action-group">{cliente.eliminado?<>{admin&&<button type="button" className="icon-button row-action" title="Reactivar cliente" aria-label={`Reactivar ${cliente.nombreCompleto}`} onClick={evento=>abrirEstado(cliente,'reactivar',evento.currentTarget)}><RotateCcw size={18}/><span className="action-label">Reactivar</span></button>}</>:<><button type="button" className="icon-button row-action" title="Ver detalle" aria-label={`Ver detalle de ${cliente.nombreCompleto}`} onClick={() => abrirCliente(cliente.id)}><Eye size={18}/><span className="action-label">Ver</span></button><button type="button" className="icon-button row-action" title="Editar cliente" aria-label={`Editar ${cliente.nombreCompleto}`} onClick={(evento) => abrirCliente(cliente.id,true,event.currentTarget)}><Pencil size={18}/><span className="action-label">Editar</span></button>{admin&&<button type="button" className="icon-button row-action button-danger" title="Suspender cliente" aria-label={`Suspender a ${cliente.nombreCompleto}`} onClick={evento=>abrirEstado(cliente,'suspender',evento.currentTarget)}><UserRoundX size={18}/><span className="action-label">Suspender</span></button>}</>}</div></td>
             </tr>)}</tbody></table>}
         <nav className="consulta-pagination" aria-label="Paginación de clientes"><span>{resultado.total} clientes · Página {pagina + 1} de {Math.max(1, resultado.paginas)}</span>
           <div><button className="text-button" disabled={pagina === 0} onClick={() => setPagina(pagina - 1)}>Anterior</button>
@@ -111,5 +116,5 @@ export default function ClientesConsulta({ volver, registrar, user }) {
           ['Estado', detalle.estado], ['Código postal', detalle.codigoPostal],
         ].map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></>}
     </section>
-  </div><ClienteEdicionModal cliente={modalEdicion} talleres={talleres} admin={admin} tallerId={tallerId} onClose={cerrarEdicion} onSaved={clienteActualizado} onFatal={(mensaje)=>{setError(mensaje);cerrarEdicion();}} openerRef={disparadorEdicionRef}/></main>;
+  </div><ClienteEdicionModal cliente={modalEdicion} talleres={talleres} admin={admin} tallerId={tallerId} onClose={cerrarEdicion} onSaved={clienteActualizado} onFatal={(mensaje)=>{setError(mensaje);cerrarEdicion();}} openerRef={disparadorEdicionRef}/><ClienteEstadoModal cliente={modalEstado} tallerId={tallerId} accion={accionEstado} onClose={cerrarEstado} onDone={estadoActualizado} openerRef={disparadorEstadoRef}/></main>;
 }

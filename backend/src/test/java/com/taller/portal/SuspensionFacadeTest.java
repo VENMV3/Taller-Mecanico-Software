@@ -32,7 +32,7 @@ class SuspensionFacadeTest {
   /** Configura el taller requerido por las operaciones permitidas. @return void. */
   private void permitirTaller(){when(talleres.findById(1L)).thenReturn(Optional.of(taller));}
   /** Impone tamaño máximo diez y conserva la consulta proyectada. @return void. */
-  @Test void limitaPaginaDeSuspensionADiez(){permitirTaller();when(clientes.consultarSuspensionPorTaller(eq(1L),anyString(),any())).thenReturn(new PageImpl<>(List.of(),PageRequest.of(0,10),0));var pagina=facade.consultarSuspension(0,99,"",1L,"nombreCompleto","asc",admin);assertEquals(10,pagina.tamanio());verify(clientes).consultarSuspensionPorTaller(eq(1L),anyString(),argThat(p->p.getPageSize()==10));}
+  @Test void limitaPaginaDeSuspensionADiez(){permitirTaller();when(clientes.consultarSuspensionPorTaller(eq(1L),anyString(),eq("TODOS"),any())).thenReturn(new PageImpl<>(List.of(),PageRequest.of(0,10),0));var pagina=facade.consultarSuspension(0,99,"",1L,"nombreCompleto","asc",admin);assertEquals(10,pagina.tamanio());verify(clientes).consultarSuspensionPorTaller(eq(1L),anyString(),eq("TODOS"),argThat(p->p.getPageSize()==10));}
   /** Rechaza columnas no permitidas antes de consultar datos. @return void. */
   @Test void rechazaOrdenNoPermitido(){permitirTaller();assertThrows(IllegalArgumentException.class,()->facade.consultarSuspension(0,10,"",1L,"email;drop","asc",admin));verifyNoInteractions(clientes);}
   /** Niega el listado a una identidad no administradora. @return void. */
