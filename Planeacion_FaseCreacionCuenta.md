@@ -147,3 +147,13 @@ Archivos modificados: `frontend/src/main.jsx`, `frontend/src/sidebar.css`, `fron
 | Validación de diff y referencias antiguas de «Ver / editar» | Aprobado (`git diff --check`, sin enlace anterior) |
 | Suite Java | No ejecutable en este equipo: no existe Maven Wrapper y `mvn` no está instalado; los últimos reportes disponibles registran 0 fallos, pero deben repetirse con Maven antes de publicar. |
 | Validación visual interactiva 375/768/1280 | Pendiente de revisión en navegador local; el build confirma la integración, no sustituye esta prueba. |
+
+## 15. Catálogo de Estatus y Suspensión de Clientes
+
+**Estado: terminado en código y pruebas automatizadas.** El catálogo `status` mantiene ACT, SUS y CAN; su CRUD está restringido a Administración. La suspensión conserva el expediente mediante soft delete (`is_deleted`, `deleted_at`, `deleted_by`) y cambia su estado a SUS con una actualización condicional atómica. El listado de suspensión usa paginación del servidor, filtro por taller y orden de lista blanca; la edición excluye al expediente propio al detectar duplicados y no permite operar clientes suspendidos. Resultados reales: `mvn test` terminó correctamente el 12 de octubre de 2026, incluyendo las pruebas de Status, suspensión, edición y regresión disponibles en el repositorio.
+
+## 16. Registro de Vehículo
+
+**Estado: terminado en código y pruebas automatizadas.** `VehiculoFacade` concentra autorización, normalización, duplicados, estado ACT y asociación a cliente; `VehiculoRepository` conserva VIN y placa normalizada como únicos. La pantalla usa marcas/modelos locales y admite captura manual cuando el catálogo está vacío.
+
+Para importar vPIC en una máquina con internet: (1) `cd /home/venmve/Taller_Mecanico`; (2) ejecutar `./scripts/importar_vpic`; (3) revisar en la misma salida totales e informe de cobertura. Para un archivo ya descargado: `./scripts/importar_vpic --archivo /ruta/al/vpic_catalogo.json`. No se ejecutó descarga real en este entorno sin internet; sí se validó la importación con fixtures y la suite completa `mvn test` terminó correctamente el 12 de octubre de 2026. Los datos proceden de NHTSA vPIC; representan principalmente EE. UU., por lo que modelos recientes o exclusivos de México pueden no aparecer. Detalle funcional: [Registrar_Vehiculo.md](docs/Registrar_Vehiculo.md).

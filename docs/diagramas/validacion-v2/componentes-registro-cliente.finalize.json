@@ -1,0 +1,530 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "skipped",
+  "type": "architecture",
+  "quality": "showcase",
+  "startedAt": "2026-10-13T02:58:00.057Z",
+  "specification": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.json",
+    "sha256": "660fa6cdc4914e1c2d39bb112ea875d03f6934780cdb0dd687d4749eb3865933",
+    "bytes": 5354
+  },
+  "artifact": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+    "sha256": "30a8867e9e3091ef7c47a04a37b1f31cd90a91b9fb9bc7e8286ae1bc937a2299",
+    "bytes": 775099
+  },
+  "stages": {
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "architecture",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.json",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/venmve/Taller_Mecanico",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "660fa6cdc4914e1c2d39bb112ea875d03f6934780cdb0dd687d4749eb3865933",
+          "bytes": 5354
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 2273,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "architecture",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.json",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/venmve/Taller_Mecanico",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "4f94e7d0-4c67-48f3-ac5c-4f65502beb81",
+        "ok": true,
+        "command": "deliver",
+        "type": "architecture",
+        "input": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.json",
+        "output": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "specification": {
+          "sha256": "660fa6cdc4914e1c2d39bb112ea875d03f6934780cdb0dd687d4749eb3865933",
+          "bytes": 5354
+        },
+        "artifact": {
+          "sha256": "30a8867e9e3091ef7c47a04a37b1f31cd90a91b9fb9bc7e8286ae1bc937a2299",
+          "bytes": 775099
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "evidence": {
+          "verified": true,
+          "repository": "https://github.com/VENMV3/Taller-Mecanico-Software",
+          "revision": "e8ac0e12649481c6da88cadc567ff94845762535",
+          "references": 14
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 755,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "check",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "artifact": {
+          "sha256": "30a8867e9e3091ef7c47a04a37b1f31cd90a91b9fb9bc7e8286ae1bc937a2299",
+          "bytes": 775099
+        },
+        "checks": [
+          {
+            "name": "single_svg",
+            "ok": true,
+            "details": [
+              "found 1 <svg> block(s)"
+            ]
+          },
+          {
+            "name": "finite_svg",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "orthogonal_arrows",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "label_route_clearance",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_crossings",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_corridors",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "container_border_runs",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "route_rhythm",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "legend_clearance",
+            "ok": true,
+            "details": []
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "metrics": {
+            "properCrossings": 0,
+            "resolvedCrossovers": 4,
+            "ambiguousCorridors": 0,
+            "arrowheadCollisions": 0,
+            "containerBorderRuns": 0,
+            "labelRouteClearanceIssues": 0,
+            "labelCanvasOverflowIssues": 0,
+            "minLabelRouteClearance": 4,
+            "desktopReadabilityIssues": 0,
+            "viewportHeightIssues": 0,
+            "minProjectedNodeTextPx": 6,
+            "maxBends": 5,
+            "routesOverSuggestedBends": 4,
+            "maxStretch": 1.288,
+            "routesOverSuggestedStretch": 0,
+            "minSegmentPx": 16,
+            "minInteriorSegmentPx": 16,
+            "shortSegmentCount": 0,
+            "shortEndpointSegmentCount": 0,
+            "shortInteriorSegmentCount": 0,
+            "microSegmentCount": 0
+          },
+          "suggestedLimits": {
+            "bendsPerRelationship": 2,
+            "stretch": 1.35,
+            "segmentPx": 16,
+            "microSegmentPx": 8
+          },
+          "routeReview": {
+            "crossings": [
+              {
+                "left": {
+                  "from": "vehiculos",
+                  "to": "clientes-repo",
+                  "label": "cliente y taller",
+                  "collectionIndex": 8,
+                  "artifactIndex": 9
+                },
+                "right": {
+                  "from": "vehiculos",
+                  "to": "vehiculos-repo",
+                  "label": "guardado",
+                  "collectionIndex": 9,
+                  "artifactIndex": 10
+                },
+                "point": [
+                  436,
+                  324
+                ],
+                "sharedNode": "vehiculos"
+              },
+              {
+                "left": {
+                  "from": "vehiculos",
+                  "to": "clientes-repo",
+                  "label": "cliente y taller",
+                  "collectionIndex": 8,
+                  "artifactIndex": 9
+                },
+                "right": {
+                  "from": "status",
+                  "to": "mysql",
+                  "label": "status",
+                  "collectionIndex": 13,
+                  "artifactIndex": 14
+                },
+                "point": [
+                  464,
+                  324
+                ]
+              },
+              {
+                "left": {
+                  "from": "vehiculos",
+                  "to": "vehiculos-repo",
+                  "label": "guardado",
+                  "collectionIndex": 9,
+                  "artifactIndex": 10
+                },
+                "right": {
+                  "from": "clientes-repo",
+                  "to": "mysql",
+                  "label": "clientes",
+                  "collectionIndex": 11,
+                  "artifactIndex": 12
+                },
+                "point": [
+                  436,
+                  345
+                ]
+              },
+              {
+                "left": {
+                  "from": "vehiculos",
+                  "to": "vehiculos-repo",
+                  "label": "guardado",
+                  "collectionIndex": 9,
+                  "artifactIndex": 10
+                },
+                "right": {
+                  "from": "status",
+                  "to": "mysql",
+                  "label": "status",
+                  "collectionIndex": 13,
+                  "artifactIndex": 14
+                },
+                "point": [
+                  463.93333333333334,
+                  251
+                ]
+              }
+            ],
+            "crowdedSides": [
+              {
+                "node": "clientes",
+                "label": "Cliente Facade",
+                "side": "right",
+                "relationships": 4,
+                "sidePx": 60,
+                "neededPx": 74
+              }
+            ],
+            "detours": [
+              {
+                "relationship": {
+                  "from": "security",
+                  "to": "clientes",
+                  "label": "autoriza",
+                  "collectionIndex": 3,
+                  "artifactIndex": 4
+                },
+                "bends": 5,
+                "stretch": 1
+              },
+              {
+                "relationship": {
+                  "from": "clientes",
+                  "to": "fotos",
+                  "label": "foto validada",
+                  "collectionIndex": 7,
+                  "artifactIndex": 8
+                },
+                "bends": 3,
+                "stretch": 1.111
+              },
+              {
+                "relationship": {
+                  "from": "clientes-repo",
+                  "to": "mysql",
+                  "label": "clientes",
+                  "collectionIndex": 11,
+                  "artifactIndex": 12
+                },
+                "bends": 4,
+                "stretch": 1.201,
+                "directCorridorBlockers": [
+                  {
+                    "id": "vehiculos-repo",
+                    "label": "VehiculoRepository",
+                    "box": [
+                      264,
+                      348,
+                      120,
+                      60
+                    ]
+                  }
+                ]
+              },
+              {
+                "relationship": {
+                  "from": "vehiculos-repo",
+                  "to": "mysql",
+                  "label": "vehículo",
+                  "collectionIndex": 12,
+                  "artifactIndex": 13
+                },
+                "bends": 4,
+                "stretch": 1.288
+              }
+            ]
+          },
+          "leadingSpace": {
+            "measured": true,
+            "emptyTopPx": 80,
+            "emptyTopRatio": 0.16,
+            "occupiedTop": 80,
+            "viewBoxTop": 0,
+            "canvasHeight": 500,
+            "typicalNodeHeight": 60,
+            "reviewSuggested": false
+          },
+          "desktopReadability": {
+            "budgetBasis": "recognized-declared-wide",
+            "readerContract": "declared-wide-v1",
+            "availableDiagramWidth": 930,
+            "actualBudgetPx": 930,
+            "actualReaderWidth": 960,
+            "desiredReaderWidth": 960,
+            "viewportCap": 1376,
+            "limit": "source-size",
+            "requestedTargetPx": 7.5,
+            "requestedTargetMet": false,
+            "hardFloorPx": 6,
+            "hardFloorMet": true,
+            "minimumOwner": {
+              "kind": "node",
+              "id": "clientes"
+            },
+            "minimumSourceTextPx": 6,
+            "minimumProjectedTextPx": 6,
+            "semanticTextCount": 37
+          },
+          "issues": []
+        },
+        "provenance": "current",
+        "deliveryReceiptId": "4f94e7d0-4c67-48f3-ac5c-4f65502beb81"
+      }
+    },
+    "browser-check": {
+      "status": "skipped",
+      "exitCode": 2,
+      "durationMs": 100,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "browser-check",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+        "--json",
+        "--require-provenance",
+        "--out-dir",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2"
+      ],
+      "execution": "in-process",
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "browser-check",
+        "evidenceKind": "automated-browser",
+        "status": "skipped",
+        "visualReview": "not-requested",
+        "provenance": "current",
+        "deliveryReceiptId": "4f94e7d0-4c67-48f3-ac5c-4f65502beb81",
+        "artifact": {
+          "path": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html",
+          "sha256": "30a8867e9e3091ef7c47a04a37b1f31cd90a91b9fb9bc7e8286ae1bc937a2299",
+          "bytes": 775099
+        },
+        "state": {
+          "detail": "read",
+          "motion": "still"
+        },
+        "chrome": {
+          "status": "unavailable",
+          "executable": null
+        },
+        "diagnostics": [
+          {
+            "code": "viewer/chrome-unavailable",
+            "severity": "warning",
+            "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+            "subject": {
+              "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html"
+            },
+            "evidence": {
+              "executable": null
+            },
+            "supportedFixes": [
+              "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+            ]
+          }
+        ],
+        "containment": {
+          "status": "skipped",
+          "policy": "fit-or-reader-declared-readable-vertical-scroll",
+          "viewports": []
+        },
+        "themeStates": {
+          "status": "skipped",
+          "viewports": []
+        },
+        "readability": {
+          "status": "skipped",
+          "minimumProjectedNodeTextPx": 6,
+          "viewports": []
+        },
+        "viewerChrome": {
+          "status": "skipped",
+          "viewports": []
+        },
+        "captures": {
+          "status": "not-requested",
+          "screenshots": [],
+          "contactSheet": null
+        },
+        "sidecars": {
+          "directory": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2",
+          "receipt": "componentes-registro-cliente.browser-check.json",
+          "files": []
+        },
+        "error": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path."
+      }
+    }
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/chrome-unavailable",
+      "severity": "warning",
+      "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+      "subject": {
+        "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/componentes-registro-cliente.html"
+      },
+      "evidence": {
+        "executable": null
+      },
+      "supportedFixes": [
+        "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.finalize.json",
+    "summaryReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.finalize-summary.json",
+    "browserCheckReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/validacion-v2/componentes-registro-cliente.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "browser-check",
+  "finishedAt": "2026-10-13T02:58:03.651Z",
+  "durationMs": 3594,
+  "update": {
+    "status": "current",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.0.1",
+    "releaseNotes": null,
+    "checkedAt": "2026-10-13T02:49:59.518Z",
+    "source": "cache",
+    "noticeRequired": false,
+    "noticeText": null
+  }
+}
