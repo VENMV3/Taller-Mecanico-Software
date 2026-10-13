@@ -12,7 +12,7 @@ PID_BACKEND="$LOGS/backend.pid"
 PID_FRONTEND="$LOGS/frontend.pid"
 JAR_BACKEND="$RAIZ/backend/target/portal-taller-1.0.0.jar"
 
-mkdir -p "$LOGS" /tmp/taller-m2
+mkdir -p "$LOGS"
 
 en_ejecucion() {
   local archivo="$1"
@@ -41,6 +41,13 @@ puerto_del_proyecto() {
 # Parámetro: puerto TCP. Retorno: 0 si está ocupado.
 puerto_ocupado() { fuser -n tcp "$1" >/dev/null 2>&1; }
 
+# Reconstruye el ejecutable cuando el código o las migraciones son posteriores al JAR.
+# Así Flyway siempre recibe las migraciones presentes en la rama actual al reiniciar.
+jar_desactualizado() {
+  [[ ! -f "$JAR_BACKEND" ]] && return 0
+  find "$RAIZ/backend/src" "$RAIZ/backend/pom.xml" -newer "$JAR_BACKEND" -print -quit | grep -q .
+}
+
 if [[ ! -f "$COMPOSE" ]]; then
   echo "No encontré Docker Compose en: $COMPOSE"
   exit 1
@@ -55,14 +62,19 @@ echo "[1/3] Iniciando MySQL..."
 docker compose -f "$COMPOSE" up -d mysql
 
 echo "[2/3] Iniciando API Spring Boot..."
-if ! en_ejecucion "$PID_BACKEND"; then
+if ! en_ejecucion "$PID_BACKEND" || ! puerto_del_proyecto 8080 "$RAIZ/backend"; then
+  rm -f "$PID_BACKEND"
+  if jar_desactualizado; then
+    echo "Reconstruyendo API para incluir código y migraciones actuales..."
+    (cd "$RAIZ/backend"; "$MAVEN" -o -q -DskipTests package)
+  fi
   if [[ -f "$JAR_BACKEND" ]]; then
     # El JAR Spring Boot incluye dependencias; permite arrancar tras reiniciar sin descargar Maven.
     (cd "$RAIZ/backend"; nohup java -jar "$JAR_BACKEND" >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
   elif [[ -x "$MAVEN" ]]; then
-    (cd "$RAIZ/backend"; nohup "$MAVEN" -o -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
+    (cd "$RAIZ/backend"; nohup "$MAVEN" -o -q spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
   elif command -v mvn >/dev/null; then
-    (cd "$RAIZ/backend"; nohup mvn -o -q -Dmaven.repo.local=/tmp/taller-m2 spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
+    (cd "$RAIZ/backend"; nohup mvn -o -q spring-boot:run >"$LOGS/backend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_BACKEND")
   else
     echo "No encontré Maven. Instálalo o ajusta la variable MAVEN en este script."
     exit 1
