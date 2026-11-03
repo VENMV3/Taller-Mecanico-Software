@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "B3 · Normalización de VIN y placa",
+    "subtitle": "Alta de vehículo: autorizar, normalizar, validar, detectar duplicados y guardar",
+    "output": "docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/VENMV3/Taller-Mecanico-Software.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "9fb9b6f21ec6d25d6c125862f16ff9e35800ae9b"
+    }
+  },
+  "lanes": [
+    { "id": "portal", "label": "Portal" },
+    { "id": "backend", "label": "API y dominio" },
+    { "id": "persistence", "label": "Persistencia" },
+    { "id": "errors", "label": "Respuestas de error", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "entrada", "label": "Entrada", "fromCol": 0, "toCol": 1 },
+    { "id": "reglas", "label": "Reglas de negocio", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "persistir", "label": "Persistencia", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["formulario", "controller", "fachada", "normalizador", "repositorio", "base"],
+  "nodes": [
+    { "id": "formulario", "lane": "portal", "col": 0, "type": "frontend", "label": "VehiculoRegistro", "sublabel": "NFKC y separadores Unicode", "width": 148, "sources": [{ "path": "frontend/src/VehiculoRegistro.jsx", "line": 7, "end_line": 29, "label": "normaliza y envía" }] },
+    { "id": "controller", "lane": "backend", "col": 1, "type": "backend", "label": "VehiculoController", "sublabel": "POST /api/vehiculos", "width": 148, "sources": [{ "path": "backend/src/main/java/com/taller/portal/controller/VehiculoController.java", "line": 12, "end_line": 18, "label": "entrada HTTP" }] },
+    { "id": "fachada", "lane": "backend", "col": 2, "type": "security", "label": "VehiculoFacade", "sublabel": "autoriza y valida reglas", "width": 148, "sources": [{ "path": "backend/src/main/java/com/taller/portal/service/VehiculoFacade.java", "line": 29, "end_line": 45, "label": "transacción y rol" }] },
+    { "id": "normalizador", "lane": "backend", "col": 3, "type": "backend", "label": "VehiculoNormalizador", "sublabel": "VIN canónico; placa minúscula", "width": 156, "sources": [{ "path": "backend/src/main/java/com/taller/portal/service/VehiculoNormalizador.java", "line": 8, "end_line": 18, "label": "NFKC y Locale.ROOT" }] },
+    { "id": "repositorio", "lane": "persistence", "col": 4, "type": "backend", "label": "VehiculoRepository", "sublabel": "consulta VIN y placa", "width": 148, "sources": [{ "path": "backend/src/main/java/com/taller/portal/repository/VehiculoRepository.java", "line": 6, "end_line": 9, "label": "duplicados canónicos" }] },
+    { "id": "base", "lane": "persistence", "col": 5, "type": "database", "label": "vehiculo", "sublabel": "id técnico y únicos", "width": 140, "sources": [{ "path": "backend/src/main/resources/db/migration/V6__registro_vehiculos.sql", "line": 2, "end_line": 23, "label": "PK, FK y únicos" }] },
+    { "id": "badRequest", "lane": "errors", "col": 3, "type": "security", "label": "400 por campo", "sublabel": "VIN o placa inválidos", "width": 140 },
+    { "id": "conflict", "lane": "errors", "col": 5, "type": "security", "label": "409", "sublabel": "duplicado o restricción única", "width": 148 }
+  ],
+  "edges": [
+    { "id": "form-controller", "from": "formulario", "to": "controller", "label": "alta", "variant": "emphasis", "role": "main" },
+    { "id": "controller-fachada", "from": "controller", "to": "fachada", "label": "datos autenticados", "variant": "security", "role": "main" },
+    { "id": "fachada-normalizador", "from": "fachada", "to": "normalizador", "label": "normalizar", "variant": "emphasis", "role": "main" },
+    { "id": "normalizador-repositorio", "from": "normalizador", "to": "repositorio", "label": "validar y comprobar", "variant": "default", "role": "main" },
+    { "id": "repositorio-base", "from": "repositorio", "to": "base", "label": "guardar", "variant": "emphasis", "role": "main" },
+    { "id": "normalizador-400", "from": "normalizador", "to": "badRequest", "label": "formato inválido", "variant": "security", "role": "error" },
+    { "id": "repositorio-409", "from": "repositorio", "to": "conflict", "label": "ya existe", "variant": "security", "role": "error" },
+    { "id": "base-409", "from": "base", "to": "conflict", "label": "violación única", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Garantías", "items": ["La forma canónica se usa para validar, buscar y guardar.", "VIN y placa son negocio; la relación usa el id técnico."] }
+  ]
+}

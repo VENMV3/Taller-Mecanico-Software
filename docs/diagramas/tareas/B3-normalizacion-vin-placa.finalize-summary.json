@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "skipped",
+  "type": "workflow",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+    "sha256": "5aa08fbf802a2097f6eb9fb07dc97a51fc9f668679c6277c18982b62e762d0ac",
+    "bytes": 4687
+  },
+  "artifact": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+    "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+    "bytes": 761294
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "skipped"
+  },
+  "failedStage": "browser-check",
+  "diagnostics": [
+    {
+      "code": "viewer/chrome-unavailable",
+      "severity": "warning",
+      "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+      "subject": {
+        "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html"
+      },
+      "evidence": {
+        "executable": null
+      },
+      "supportedFixes": [
+        "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+      ]
+    }
+  ],
+  "diagnosticSummary": {
+    "total": 1,
+    "shown": 1,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.finalize.json",
+    "summaryReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.finalize-summary.json",
+    "browserCheckReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.browser-check.json"
+  },
+  "update": {
+    "status": "update_available",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.2.0",
+    "releaseNotes": "https://github.com/tt-a1i/archify/releases/tag/v3.2.0",
+    "severity": "normal",
+    "checkedAt": "2026-11-03T23:32:19.533Z",
+    "source": "cache",
+    "noticeRequired": true,
+    "noticeText": "Archify update: 3.0.1 → 3.2.0. A previous check at 2026-11-03T23:32:19.533Z found a newer release. Release notes: https://github.com/tt-a1i/archify/releases/tag/v3.2.0. The installed Skill has not changed; ask to snooze or ignore this reminder.",
+    "eventKey": "archify@sha256:70e210265c59f24dcbdf2a502ff671104b5454e7ee7d3554aecd86bad32384f5"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 608
+}

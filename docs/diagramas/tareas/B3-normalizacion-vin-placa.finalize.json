@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "command": "finalize",
+  "status": "skipped",
+  "type": "workflow",
+  "quality": "showcase",
+  "startedAt": "2026-11-03T23:33:05.749Z",
+  "specification": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+    "sha256": "5aa08fbf802a2097f6eb9fb07dc97a51fc9f668679c6277c18982b62e762d0ac",
+    "bytes": 4687
+  },
+  "artifact": {
+    "path": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+    "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+    "bytes": 761294
+  },
+  "stages": {
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "workflow",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/venmve/Taller_Mecanico",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "5aa08fbf802a2097f6eb9fb07dc97a51fc9f668679c6277c18982b62e762d0ac",
+          "bytes": 4687
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 344,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "deliver",
+        "workflow",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/venmve/Taller_Mecanico",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "7d875419-eb3e-4d16-8fd8-d8cfdec7e678",
+        "ok": true,
+        "command": "deliver",
+        "type": "workflow",
+        "input": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+        "output": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "specification": {
+          "sha256": "5aa08fbf802a2097f6eb9fb07dc97a51fc9f668679c6277c18982b62e762d0ac",
+          "bytes": 4687
+        },
+        "artifact": {
+          "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+          "bytes": 761294
+        },
+        "validation": {
+          "checksPassed": 9,
+          "checkCount": 9,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "evidence": {
+          "verified": true,
+          "repository": "https://github.com/VENMV3/Taller-Mecanico-Software",
+          "revision": "9fb9b6f21ec6d25d6c125862f16ff9e35800ae9b",
+          "references": 6
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 108,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "check",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "artifact": {
+          "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+          "bytes": 761294
+        },
+        "checks": [
+          {
+            "name": "single_svg",
+            "ok": true,
+            "details": [
+              "found 1 <svg> block(s)"
+            ]
+          },
+          {
+            "name": "finite_svg",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "orthogonal_arrows",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "label_route_clearance",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_crossings",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "relationship_corridors",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "container_border_runs",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "route_rhythm",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "legend_clearance",
+            "ok": true,
+            "details": []
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "metrics": {
+            "properCrossings": 0,
+            "resolvedCrossovers": 0,
+            "ambiguousCorridors": 0,
+            "arrowheadCollisions": 0,
+            "containerBorderRuns": 0,
+            "labelRouteClearanceIssues": 0,
+            "labelCanvasOverflowIssues": 0,
+            "minLabelRouteClearance": 15.4,
+            "desktopReadabilityIssues": 0,
+            "viewportHeightIssues": 0,
+            "minProjectedNodeTextPx": 6.607460035523979,
+            "maxBends": 3,
+            "routesOverSuggestedBends": 1,
+            "maxStretch": 1.11,
+            "routesOverSuggestedStretch": 0,
+            "minSegmentPx": 16,
+            "minInteriorSegmentPx": 86,
+            "shortSegmentCount": 0,
+            "shortEndpointSegmentCount": 0,
+            "shortInteriorSegmentCount": 0,
+            "microSegmentCount": 0
+          },
+          "suggestedLimits": {
+            "bendsPerRelationship": 2,
+            "stretch": 1.35,
+            "segmentPx": 16,
+            "microSegmentPx": 8
+          },
+          "routeReview": {
+            "crossings": [],
+            "detours": [
+              {
+                "relationship": {
+                  "id": "normalizador-400",
+                  "from": "normalizador",
+                  "to": "badRequest",
+                  "label": "formato inválido",
+                  "collectionIndex": 4,
+                  "artifactIndex": 5
+                },
+                "bends": 3,
+                "stretch": 1.11
+              }
+            ]
+          },
+          "leadingSpace": {
+            "measured": false,
+            "reviewSuggested": false
+          },
+          "desktopReadability": {
+            "budgetBasis": "legacy-930",
+            "readerContract": "declared-wide-v1",
+            "availableDiagramWidth": 930,
+            "actualBudgetPx": 930,
+            "limit": "legacy",
+            "requestedTargetPx": null,
+            "requestedTargetMet": null,
+            "hardFloorPx": 6,
+            "hardFloorMet": true,
+            "minimumOwner": {
+              "kind": "node",
+              "id": "formulario"
+            },
+            "minimumSourceTextPx": 8,
+            "minimumProjectedTextPx": 6.607460035523979,
+            "semanticTextCount": 24
+          },
+          "issues": []
+        },
+        "provenance": "current",
+        "deliveryReceiptId": "7d875419-eb3e-4d16-8fd8-d8cfdec7e678"
+      }
+    },
+    "browser-check": {
+      "status": "skipped",
+      "exitCode": 2,
+      "durationMs": 16,
+      "command": [
+        "/opt/codex-desktop/resources/node-runtime/bin/node",
+        "/home/venmve/.agents/skills/archify/bin/archify.mjs",
+        "browser-check",
+        "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+        "--json",
+        "--require-provenance"
+      ],
+      "execution": "in-process",
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": false,
+        "command": "browser-check",
+        "evidenceKind": "automated-browser",
+        "status": "skipped",
+        "visualReview": "not-requested",
+        "provenance": "current",
+        "deliveryReceiptId": "7d875419-eb3e-4d16-8fd8-d8cfdec7e678",
+        "artifact": {
+          "path": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+          "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+          "bytes": 761294
+        },
+        "state": {
+          "detail": "read",
+          "motion": "still"
+        },
+        "chrome": {
+          "status": "unavailable",
+          "executable": null
+        },
+        "diagnostics": [
+          {
+            "code": "viewer/chrome-unavailable",
+            "severity": "warning",
+            "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+            "subject": {
+              "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html"
+            },
+            "evidence": {
+              "executable": null
+            },
+            "supportedFixes": [
+              "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+            ]
+          }
+        ],
+        "containment": {
+          "status": "skipped",
+          "policy": "fit-or-reader-declared-readable-vertical-scroll",
+          "viewports": []
+        },
+        "themeStates": {
+          "status": "skipped",
+          "viewports": []
+        },
+        "readability": {
+          "status": "skipped",
+          "minimumProjectedNodeTextPx": 6,
+          "viewports": []
+        },
+        "viewerChrome": {
+          "status": "skipped",
+          "viewports": []
+        },
+        "captures": {
+          "status": "not-requested",
+          "screenshots": [],
+          "contactSheet": null
+        },
+        "sidecars": {
+          "receipt": "B3-normalizacion-vin-placa.browser-check.json",
+          "files": []
+        },
+        "error": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path."
+      }
+    }
+  },
+  "diagnostics": [
+    {
+      "code": "viewer/chrome-unavailable",
+      "severity": "warning",
+      "message": "Chrome or Chromium is unavailable. Set ARCHIFY_CHROME to its executable path.",
+      "subject": {
+        "artifact": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html"
+      },
+      "evidence": {
+        "executable": null
+      },
+      "supportedFixes": [
+        "set ARCHIFY_CHROME to a Chrome or Chromium executable and rerun browser-check"
+      ]
+    }
+  ],
+  "evidence": {
+    "receipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.finalize.json",
+    "summaryReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.finalize-summary.json",
+    "browserCheckReceipt": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.browser-check.json"
+  },
+  "visualReview": "not-requested",
+  "failedStage": "browser-check",
+  "finishedAt": "2026-11-03T23:33:06.358Z",
+  "durationMs": 608,
+  "update": {
+    "status": "update_available",
+    "installedVersion": "3.0.1",
+    "availableVersion": "3.2.0",
+    "releaseNotes": "https://github.com/tt-a1i/archify/releases/tag/v3.2.0",
+    "severity": "normal",
+    "checkedAt": "2026-11-03T23:32:19.533Z",
+    "source": "cache",
+    "noticeRequired": true,
+    "noticeText": "Archify update: 3.0.1 → 3.2.0. A previous check at 2026-11-03T23:32:19.533Z found a newer release. Release notes: https://github.com/tt-a1i/archify/releases/tag/v3.2.0. The installed Skill has not changed; ask to snooze or ignore this reminder.",
+    "eventKey": "archify@sha256:70e210265c59f24dcbdf2a502ff671104b5454e7ee7d3554aecd86bad32384f5"
+  }
+}
