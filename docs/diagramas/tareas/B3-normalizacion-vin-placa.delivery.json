@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "7d875419-eb3e-4d16-8fd8-d8cfdec7e678",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.json",
+  "output": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/B3-normalizacion-vin-placa.html",
+  "specification": {
+    "sha256": "5aa08fbf802a2097f6eb9fb07dc97a51fc9f668679c6277c18982b62e762d0ac",
+    "bytes": 4687
+  },
+  "artifact": {
+    "sha256": "a33d6f101beb94a58306b0b85261f23c992c4265cdc5dac2bb4c8ff252f9b34b",
+    "bytes": 761294
+  }
+}
