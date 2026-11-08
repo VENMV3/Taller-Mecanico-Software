@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "command": "deliver",
+  "status": "pending",
+  "receiptId": "b26b3732-1780-474f-b99a-d02f0a9bfb49",
+  "input": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/UC-CV-08-actualizacion-vehiculo.json",
+  "output": "/home/venmve/Taller_Mecanico/docs/diagramas/tareas/UC-CV-08-actualizacion-vehiculo.html"
+}
