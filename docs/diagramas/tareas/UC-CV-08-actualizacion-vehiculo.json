@@ -1,0 +1,40 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "UC-CV-08 · Actualización de vehículo",
+    "subtitle": "Ficha, autorización, validación, auditoría y conflicto optimista",
+    "locale": "es",
+    "quality_profile": "showcase",
+    "output": "docs/diagramas/tareas/UC-CV-08-actualizacion-vehiculo.html",
+    "repository": {"url":"https://github.com/VENMV3/Taller-Mecanico-Software.git","provider":"github","link_mode":"web","revision":"fe404f291de2fffae64873c3657881983623b2c3"}
+  },
+  "lanes": [
+    {"id":"portal","label":"Portal React"},
+    {"id":"api","label":"API Spring Boot"},
+    {"id":"datos","label":"Persistencia"},
+    {"id":"errores","label":"Respuestas de control","variant":"exception"}
+  ],
+  "mainPath":["ficha","editar","autorizar","validar","guardar","auditar","resultado"],
+  "nodes":[
+    {"id":"ficha","lane":"portal","col":0,"type":"frontend","label":"Ficha de vehículo","sublabel":"GET con controlVersion","width":132,"sources":[{"path":"frontend/src/VehiculoFicha.jsx","line":10,"end_line":17}]},
+    {"id":"editar","lane":"portal","col":1,"type":"frontend","label":"Modal accesible","sublabel":"normaliza VIN y placa","width":132,"sources":[{"path":"frontend/src/VehiculoFicha.jsx","line":20,"end_line":28}]},
+    {"id":"autorizar","lane":"api","col":2,"type":"security","label":"VehiculoFacade","sublabel":"rol y taller del usuario","width":132,"sources":[{"path":"backend/src/main/java/com/taller/portal/service/VehiculoFacade.java","line":34,"end_line":43}]},
+    {"id":"validar","lane":"api","col":3,"type":"backend","label":"Normalizar y validar","sublabel":"duplicados y controlVersion","width":132,"sources":[{"path":"backend/src/main/java/com/taller/portal/service/VehiculoFacade.java","line":38,"end_line":41}]},
+    {"id":"guardar","lane":"datos","col":4,"type":"database","label":"vehiculo","sublabel":"UPDATE con @Version","width":132,"sources":[{"path":"backend/src/main/java/com/taller/portal/model/Vehiculo.java","line":17,"end_line":18}]},
+    {"id":"auditar","lane":"datos","col":5,"type":"database","label":"vehiculo_auditoria","sublabel":"append-only por campo","width":132,"sources":[{"path":"backend/src/main/resources/db/migration/V7__actualizacion_vehiculos_auditoria.sql","line":3,"end_line":15}]},
+    {"id":"resultado","lane":"portal","col":5,"type":"frontend","label":"Ficha actualizada","sublabel":"sin recargar","width":132,"sources":[{"path":"frontend/src/VehiculoFicha.jsx","line":10,"end_line":17}]},
+    {"id":"conflicto","lane":"errores","col":4,"type":"security","label":"400 / 403 / 404 / 409","sublabel":"incluye duplicado y versión","width":150,"sources":[{"path":"backend/src/main/java/com/taller/portal/service/VehiculoFacade.java","line":34,"end_line":43}]}
+  ],
+  "edges":[
+    {"from":"ficha","to":"editar","label":"editar","role":"main"},
+    {"from":"editar","to":"autorizar","label":"PUT /api/vehiculos/{id}","role":"main","variant":"emphasis"},
+    {"from":"autorizar","to":"validar","label":"permiso y alcance","role":"main"},
+    {"from":"validar","to":"guardar","label":"cambio real","role":"main"},
+    {"from":"guardar","to":"auditar","label":"misma transacción","role":"main","variant":"emphasis"},
+    {"from":"auditar","to":"resultado","label":"200 ficha vigente","role":"return"},
+    {"from":"autorizar","to":"conflicto","label":"acceso o recurso","role":"error","variant":"security"},
+    {"from":"validar","to":"conflicto","label":"validación o conflicto","role":"error","variant":"security"}
+  ],
+  "cards":[{"dot":"amber","title":"Regla histórica","items":["No existe módulo de órdenes todavía.","Las órdenes futuras copiarán datos del vehículo al cerrarse."]}]
+}
