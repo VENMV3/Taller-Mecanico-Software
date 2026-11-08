@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Siembra manual e idempotente; las credenciales no se imprimen ni se versionan.
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; CREDS="$ROOT/data/credenciales_demo.txt"
+mkdir -p "$ROOT/data"; umask 077
+if [[ ! -f "$CREDS" ]]; then
+  printf 'DEMO_RECEPCIONISTA_PASSWORD=%s\nDEMO_DESARROLLADOR_PASSWORD=%s\n' "$(openssl rand -base64 24)" "$(openssl rand -base64 24)" > "$CREDS"
+fi
+chmod 600 "$CREDS"; set -a; source "$CREDS"; set +a
+cd "$ROOT/backend"; env JAVA_HOME=/usr/lib/jvm/java-21-openjdk PATH=/usr/lib/jvm/java-21-openjdk/bin:$PATH mvn -o -q spring-boot:run -Dspring-boot.run.arguments="--app.demo-users.seed=true --server.port=0"
+echo "Usuarios demo procesados; credenciales en $CREDS"

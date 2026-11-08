@@ -11,3 +11,4 @@ docs/diagramas/*.delivery.json
 docs/diagramas/*.finalize.json
 docs/diagramas/*.finalize-summary.json
 data/vpic/
+data/credenciales_demo.txt
