@@ -11,6 +11,8 @@ LOGS="$RAIZ/logs"
 PID_BACKEND="$LOGS/backend.pid"
 PID_FRONTEND="$LOGS/frontend.pid"
 JAR_BACKEND="$RAIZ/backend/target/portal-taller-1.0.0.jar"
+JDK21="/usr/lib/jvm/java-21-openjdk"
+API_PORT="${TALLER_API_PORT:-8080}"
 
 mkdir -p "$LOGS"
 
@@ -41,6 +43,11 @@ puerto_del_proyecto() {
 # Parámetro: puerto TCP. Retorno: 0 si está ocupado.
 puerto_ocupado() { fuser -n tcp "$1" >/dev/null 2>&1; }
 
+puerto_api_disponible() {
+  local puerto="$1"
+  ! puerto_ocupado "$puerto" || puerto_del_proyecto "$puerto" "$RAIZ/backend"
+}
+
 # Reconstruye el ejecutable cuando el código o las migraciones son posteriores al JAR.
 # Así Flyway siempre recibe las migraciones presentes en la rama actual al reiniciar.
 jar_desactualizado() {
@@ -58,14 +65,27 @@ if ! command -v docker >/dev/null; then
   exit 1
 fi
 
+while ! puerto_api_disponible "$API_PORT"; do
+  echo "El puerto $API_PORT está ocupado por otro proceso; buscando el siguiente disponible..."
+  API_PORT=$((API_PORT + 1))
+done
+export SERVER_PORT="$API_PORT"
+export VITE_API_PORT="$API_PORT"
+export TALLER_API_PORT="$API_PORT"
+if [[ -d "$JDK21" ]]; then
+  export JAVA_HOME="$JDK21"
+  export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
 echo "[1/3] Iniciando MySQL..."
 docker compose -f "$COMPOSE" up -d mysql
 
 echo "[2/3] Iniciando API Spring Boot..."
-if ! en_ejecucion "$PID_BACKEND" || ! puerto_del_proyecto 8080 "$RAIZ/backend"; then
+if ! en_ejecucion "$PID_BACKEND" || ! puerto_del_proyecto "$API_PORT" "$RAIZ/backend"; then
   rm -f "$PID_BACKEND"
   if jar_desactualizado; then
     echo "Reconstruyendo API para incluir código y migraciones actuales..."
+    (cd "$RAIZ/backend"; "$MAVEN" -o -q test)
     (cd "$RAIZ/backend"; "$MAVEN" -o -q -DskipTests package)
   fi
   if [[ -f "$JAR_BACKEND" ]]; then
@@ -91,12 +111,12 @@ elif puerto_ocupado 5173; then
   echo "El puerto 5173 está ocupado por otro proceso. Libéralo antes de iniciar TallerCore."
   exit 1
 elif ! en_ejecucion "$PID_FRONTEND"; then
-  (cd "$RAIZ/frontend"; nohup npm run dev >"$LOGS/frontend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_FRONTEND")
+  (cd "$RAIZ/frontend"; nohup env VITE_API_PORT="$API_PORT" npm run dev >"$LOGS/frontend.log" 2>&1 < /dev/null & guardar_grupo "$!" "$PID_FRONTEND")
 fi
 
 echo
 echo "TallerCore se está iniciando."
 echo "Portal:   http://localhost:5173"
-echo "API:      http://localhost:8080"
+echo "API:      http://localhost:$API_PORT"
 echo "Registros: $LOGS"
 echo "Para detener los servidores: $RAIZ/detener-taller.sh"

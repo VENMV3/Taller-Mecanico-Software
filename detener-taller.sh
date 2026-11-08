@@ -50,7 +50,8 @@ detener_huerfano_por_puerto() {
   done
 }
 
-detener_huerfano_por_puerto backend 8080 "$RAIZ/backend"
+API_PORT="${TALLER_API_PORT:-8080}"
+detener_huerfano_por_puerto backend "$API_PORT" "$RAIZ/backend"
 detener_huerfano_por_puerto frontend 5173 "$RAIZ/frontend"
 
 echo "MySQL permanece activo. Para detenerlo también:"
