@@ -80,7 +80,7 @@ class VehiculoNormalizacionTest {
  }
 
  /** Rechaza VIN y placa nulos, vacíos, solo separadores, caracteres prohibidos y longitudes inválidas. */
- @Test void rechazaIdentificadoresInvalidos(){
+ @Test void rechazaIdentificadoresInvalidos() throws Exception {
   Long clienteId=registrarCliente();
   assertAll(
    ()->assertThrows(IllegalArgumentException.class,()->vehiculos.registrar(datos(clienteId,null,"abc123"),recepcion)),
