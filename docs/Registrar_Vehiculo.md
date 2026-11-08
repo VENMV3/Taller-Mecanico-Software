@@ -35,6 +35,14 @@ La fachada normaliza primero VIN, placa y textos; verifica cliente, rol y taller
 
 VIN y placa normalizada son únicos aun si un vehículo cambia de estatus. La Fachada los comprueba y también traduce la restricción única de BD a `409`, evitando dobles registros. Una alta correcta devuelve **“Vehículo Activo”** con estado `ACT`.
 
+## Actualización de vehículo (UC-CV-08)
+
+La ficha `GET /api/vehiculos/{id}` muestra los datos del vehículo, su estatus, propietario mínimo y `controlVersion`. El flujo es **ficha → editar → normalizar → validar → duplicados → guardar → auditar** mediante `PUT /api/vehiculos/{id}`. Solo se pueden editar VIN, placa, marca, modelo, año, versión, color y kilometraje; propietario, estatus e id no se aceptan.
+
+La actualización conserva los roles del registro. Recepción/Secretaría solo ven y editan vehículos de su taller (`404` fuera de alcance); rol no permitido recibe `403`; propietario suspendido, VIN/placa duplicado o versión desactualizada reciben `409`. Si los valores normalizados no cambian, devuelve la ficha sin escribir ni auditar.
+
+Cada campo realmente cambiado genera una fila append-only en `vehiculo_auditoria` con usuario, fecha/hora, vehículo y valor anterior/nuevo, en la misma transacción que el cambio. `control_version` aplica bloqueo optimista para evitar pérdidas silenciosas. No existe aún un módulo de órdenes: cuando exista, debe copiar los datos del vehículo al cerrar una orden para que la edición posterior no cambie el historial.
+
 ## Catálogo vPIC local
 
 El catálogo se importa en `vpic_marca` y `vpic_modelo`; la interfaz consulta únicamente `GET /api/vehiculos/catalogo/*` contra la base local. Para descargar e importar en una máquina con internet:
