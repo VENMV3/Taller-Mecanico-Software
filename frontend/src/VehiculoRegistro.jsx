@@ -6,9 +6,9 @@ const API='/api';
 const token=()=>({Authorization:`Bearer ${localStorage.getItem('taller_token')}`});
 const SEPARADORES=/[\s\u00A0\u200B\u200C\u200D\u2060\uFEFF\-\u2010\u2011\u2012\u2013\u2014\u2015]+/g;
 /** Normaliza el VIN con NFKC, sin separadores y en mayúsculas estables. @param {string} valor entrada del usuario. @returns {string} VIN canónico. */
-const normalizarVin=valor=>(valor||'').normalize('NFKC').trim().replace(SEPARADORES,'').toUpperCase();
+export const normalizarVin=valor=>(valor||'').normalize('NFKC').trim().replace(SEPARADORES,'').toUpperCase();
 /** Normaliza la placa con NFKC, sin separadores y en la convención histórica de minúsculas. @param {string} valor entrada del usuario. @returns {string} placa canónica. */
-const normalizarPlaca=valor=>(valor||'').normalize('NFKC').trim().replace(SEPARADORES,'').toLowerCase();
+export const normalizarPlaca=valor=>(valor||'').normalize('NFKC').trim().replace(SEPARADORES,'').toLowerCase();
 /** Formulario accesible de alta de vehículo; el catálogo local solo sugiere valores y nunca bloquea captura manual. @param {{volver:Function,clienteId?:number|string,confirmacionCliente?:boolean}} props retorno, cliente fijo y confirmación previa. @returns {JSX.Element} formulario. */
 export default function VehiculoRegistro({volver,clienteId,confirmacionCliente=false}){
  const fijo=useMemo(()=>String(clienteId||new URLSearchParams(window.location.search).get('clienteId')||''),[clienteId]);
