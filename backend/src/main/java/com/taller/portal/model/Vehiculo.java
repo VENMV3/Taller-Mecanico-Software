@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
  @Column(nullable=false,length=120) public String version;
  @Column(nullable=false,length=80) public String color;
  public Long kilometraje;
+ /** Versión técnica asignada por JPA para impedir actualizaciones concurrentes silenciosas. */
+ @Version @Column(name="control_version",nullable=false) public Long controlVersion;
  @ManyToOne(optional=false) @JoinColumn(name="status_id",nullable=false) public StatusCatalog status;
  @Column(name="creado_en",nullable=false) public LocalDateTime creadoEn=LocalDateTime.now();
  @ManyToOne @JoinColumn(name="creado_por") public User creadoPor;

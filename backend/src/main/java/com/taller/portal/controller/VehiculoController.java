@@ -16,4 +16,6 @@ import org.springframework.web.bind.annotation.*;
  /** @return modelos locales filtrados por marca y prefijo. */ @GetMapping("/catalogo/modelos") public List<Modelo> modelos(@RequestParam Long marcaId,@RequestParam(defaultValue="") String prefijo,Authentication a){return facade.modelos(marcaId,prefijo,a);}
  /** @return clientes activos del taller de la identidad autenticada. */ @GetMapping("/clientes") public List<ClienteOpcion> clientes(@RequestParam(defaultValue="") String busqueda,Authentication a){return facade.clientes(busqueda,a);}
  /** @return alta creada en estado ACT. */ @PostMapping @ResponseStatus(HttpStatus.CREATED) public Respuesta registrar(@Valid @RequestBody Registro d,Authentication a){return facade.registrar(d,a);}
+ /** @return ficha de vehículo visible para la identidad autenticada. */ @GetMapping("/{id}") public Detalle detalle(@PathVariable Long id,Authentication a){return facade.detalle(id,a);}
+ /** Actualiza datos operativos sin permitir cambiar propietario o estatus. */ @PutMapping("/{id}") public Detalle actualizar(@PathVariable Long id,@Valid @RequestBody Actualizacion d,Authentication a){return facade.actualizar(id,d,a);}
 }
