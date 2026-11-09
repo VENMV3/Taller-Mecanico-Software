@@ -3,9 +3,10 @@
 set -euo pipefail
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MAVEN="/home/venmve/.local/share/JetBrains/Toolbox/apps/intellij-idea/plugins/maven-plugin/lib/maven3/bin/mvn"
+JDK21="/usr/lib/jvm/java-21-openjdk"
 ARCHIVO="$RAIZ/data/vpic/vpic_catalogo.json"; DESCARGAR=true
 if [[ "${1:-}" == "--archivo" ]]; then ARCHIVO="${2:?Falta ruta para --archivo}"; DESCARGAR=false; fi
 [[ -x "$MAVEN" ]] || MAVEN="mvn"
 mkdir -p "$(dirname "$ARCHIVO")"
-ARGS="--app.vpic.import-file=$ARCHIVO"; $DESCARGAR && ARGS="$ARGS --app.vpic.download=true"
-(cd "$RAIZ/backend" && "$MAVEN" -q -Dmaven.repo.local=/tmp/taller-m2 -Dspring-boot.run.arguments="$ARGS" spring-boot:run)
+ARGS="--app.vpic.import-file=$ARCHIVO --server.port=0"; $DESCARGAR && ARGS="$ARGS --app.vpic.download=true"
+(cd "$RAIZ/backend" && env JAVA_HOME="$JDK21" PATH="$JDK21/bin:$PATH" "$MAVEN" -q -Dmaven.repo.local=/tmp/taller-m2 -Dspring-boot.run.arguments="$ARGS" spring-boot:run)
