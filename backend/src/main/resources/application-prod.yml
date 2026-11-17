@@ -12,7 +12,24 @@ spring:
     properties:
       hibernate.dialect: org.hibernate.dialect.MySQLDialect
   flyway:
+    enabled: true
     baseline-on-migrate: false
+  hikari:
+    maximum-pool-size: 3
+    minimum-idle: 1
+    max-lifetime: 300000
+    connection-timeout: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
 
 app:
   jwt-secret: ${JWT_SECRET}
+  cors-origins: ${CORS_ORIGINS}
+  upload-dir: ${UPLOAD_DIR}

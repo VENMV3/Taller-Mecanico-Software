@@ -15,3 +15,5 @@ spring:
 app:
   jwt-secret: ${JWT_SECRET}
   technical-account-password: ${DEV_TECHNICAL_ACCOUNT_PASSWORD}
+  cors-origins: ${CORS_ORIGINS:http://localhost:5173}
+  upload-dir: ${UPLOAD_DIR:uploads}

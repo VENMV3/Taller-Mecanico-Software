@@ -18,6 +18,8 @@ El perfil `dev` inicializa los roles y una cuenta técnica local; su contraseña
 
 ## Variables de entorno
 
+Para Render, usa `JAVA_TOOL_OPTIONS=-Xmx300m`. El disco del plan gratuito es efímero: las fotografías en `UPLOAD_DIR` se perderán al reiniciar o redesplegar; usa almacenamiento externo antes de producción.
+
 En `dev` y `prod` se requieren las siguientes variables; los valores mostrados son ejemplos falsos:
 
 | Variable | Uso | Ejemplo falso |
