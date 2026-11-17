@@ -1,0 +1,41 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "A9 · Mejora visual y responsiva",
+    "subtitle": "Flujo visual aplicado sin modificar contratos ni datos",
+    "output": "docs/diagramas/tareas/A9-mejora-visual-responsiva.html",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "persona", "label": "Persona usuaria" },
+    { "id": "portal", "label": "Portal React" },
+    { "id": "control", "label": "Controles de presentación", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "entrada", "label": "Entrada", "fromCol": 0, "toCol": 1 },
+    { "id": "adaptacion", "label": "Adaptación", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "salida", "label": "Lectura", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["viewport", "tokens", "navegacion", "contenido", "vista"],
+  "nodes": [
+    { "id": "viewport", "lane": "persona", "col": 0, "type": "external", "label": "Viewport", "sublabel": "320–1536 px y 200 %", "width": 148 },
+    { "id": "tokens", "lane": "portal", "col": 1, "type": "frontend", "label": "index.css", "sublabel": "tokens y superficies sólidas", "width": 156 },
+    { "id": "navegacion", "lane": "portal", "col": 2, "type": "frontend", "label": "Dashboard", "sublabel": "menú móvil accesible", "width": 148 },
+    { "id": "contenido", "lane": "portal", "col": 3, "type": "frontend", "label": "Vistas y formularios", "sublabel": "rejillas, tablas y modales", "width": 164 },
+    { "id": "vista", "lane": "persona", "col": 5, "type": "frontend", "label": "Interfaz legible", "sublabel": "sin desbordamiento de página", "width": 160 },
+    { "id": "a11y", "lane": "control", "col": 3, "type": "security", "label": "Accesibilidad", "sublabel": "foco, Esc y 44 px", "width": 148 },
+    { "id": "motion", "lane": "control", "col": 4, "type": "security", "label": "Movimiento reducido", "sublabel": "transiciones ≤250 ms", "width": 156 }
+  ],
+  "edges": [
+    { "id": "viewport-tokens", "from": "viewport", "to": "tokens", "label": "aplica", "variant": "default", "role": "main" },
+    { "id": "tokens-navigation", "from": "tokens", "to": "navegacion", "label": "estiliza", "variant": "emphasis", "role": "main" },
+    { "id": "navigation-content", "from": "navegacion", "to": "contenido", "label": "muestra", "variant": "default", "role": "main" },
+    { "id": "content-view", "from": "contenido", "to": "vista", "label": "adapta", "variant": "emphasis", "role": "main" },
+    { "id": "content-a11y", "from": "contenido", "to": "a11y", "label": "conserva", "variant": "security", "role": "branch" },
+    { "id": "a11y-motion", "from": "a11y", "to": "motion", "label": "respeta", "variant": "security", "role": "branch" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Alcance A9", "items": ["Solo CSS y JSX de presentación.", "No cambia API, backend ni base de datos."] }
+  ]
+}
