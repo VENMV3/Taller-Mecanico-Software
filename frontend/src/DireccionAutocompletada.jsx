@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { LoaderCircle, MapPin } from 'lucide-react';
+import { API_URL } from './api';
 
 /** Consulta exclusivamente la API local autenticada. @param {string} ruta endpoint local @param {AbortSignal} signal cancelación. @returns {Promise<unknown>} JSON. */
 async function consultarCatalogo(ruta, signal) {
-  const response = await fetch(ruta, { signal, headers: { Authorization: `Bearer ${localStorage.getItem('taller_token')}` } });
+  const response = await fetch(`${API_URL}${ruta}`, { signal, headers: { Authorization: `Bearer ${localStorage.getItem('taller_token')}` } });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(response.status === 403 ? 'No tienes permiso para usar el catálogo postal.' : 'El catálogo local no está disponible.');
   return response.json();

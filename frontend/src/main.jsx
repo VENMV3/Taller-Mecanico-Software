@@ -10,11 +10,12 @@ import DireccionAutocompletada from './DireccionAutocompletada';
 import Talleres from './Talleres';
 import StatusListado from './StatusListado';
 import VehiculoRegistro from './VehiculoRegistro';
+import { API_URL } from './api';
 import VehiculoFicha from './VehiculoFicha';
 import './vehiculo-registro.css';
 import { confirmarRecuperacion, solicitarRecuperacion } from './recoveryApi';
 
-const API = '/api';
+const API = `${API_URL}/api`;
 const privilegedRoles = ['ADMINISTRADOR_SISTEMA', 'RECEPCIONISTA'];
 
 /** Renderiza un campo accesible con ayuda y error contextual. @param {object} props propiedades HTML, etiqueta, ayuda y error. @returns {JSX.Element} campo de formulario. */
@@ -86,7 +87,7 @@ function ClienteRegistro({ user, volver, abrirVehiculo }) {
   const [values, setValues] = useState({ nombreCompleto: '', contactoAlternativo: '', edad: '', fechaNacimiento: '', telefonoPersonal: '', telefonoTrabajo: '', email: '', emailTrabajo: '', calle: '', colonia: '', municipio: '', estado: '', codigoPostal: '', tallerId: '' }); const [talleres,setTalleres]=useState([]);
   const [photo, setPhoto] = useState(null); const [message, setMessage] = useState(''); const [messageType, setMessageType] = useState('error'); const [saving, setSaving] = useState(false); const [key] = useState(() => crypto.randomUUID());
   const preview = useMemo(() => photo ? URL.createObjectURL(photo) : '', [photo]);
-  /** Carga talleres permitidos para selector de administrador. @returns {void}. */ useEffect(()=>{fetch('/api/talleres?pagina=0&tamanio=10',{headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`}}).then(r=>r.ok?r.json():null).then(d=>setTalleres(d?.talleres||[])).catch(()=>setTalleres([]));},[]);
+  /** Carga talleres permitidos para selector de administrador. @returns {void}. */ useEffect(()=>{fetch(`${API_URL}/api/talleres?pagina=0&tamanio=10`,{headers:{Authorization:`Bearer ${localStorage.getItem('taller_token')}`}}).then(r=>r.ok?r.json():null).then(d=>setTalleres(d?.talleres||[])).catch(()=>setTalleres([]));},[]);
   /** Actualiza un campo sin alterar la estructura enviada al backend. @param {Event} event evento de entrada. @returns {void}. */
   const change = event => setValues({ ...values, [event.target.name]: event.target.value });
   /** Valida el archivo desde UI y actualiza la vista previa. @param {Event} event evento de archivo. @returns {void}. */

@@ -1,8 +1,9 @@
 import React,{useEffect,useMemo,useState}from 'react';
 import {CarFront,CheckCircle2,Search} from 'lucide-react';
+import { API_URL } from './api';
 import './vehiculo-registro.css';
 
-const API='/api';
+const API=`${API_URL}/api`;
 const token=()=>({Authorization:`Bearer ${localStorage.getItem('taller_token')}`});
 const SEPARADORES=/[\s\u00A0\u200B\u200C\u200D\u2060\uFEFF\-\u2010\u2011\u2012\u2013\u2014\u2015]+/g;
 /** Normaliza el VIN con NFKC, sin separadores y en mayúsculas estables. @param {string} valor entrada del usuario. @returns {string} VIN canónico. */

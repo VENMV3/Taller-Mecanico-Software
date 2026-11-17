@@ -1,6 +1,8 @@
+import { API_URL } from './api';
+
 /** Ejecuta una solicitud autenticada al catálogo de estatus. @param {string} path Ruta relativa. @param {RequestInit} options Opciones HTTP. @returns {Promise<unknown>} Respuesta JSON. @throws {Error} Cuando la operación es rechazada. */
 async function request(path, options = {}) {
-  const response = await fetch(`/api/status${path}`, {
+  const response = await fetch(`${API_URL}/api/status${path}`, {
     ...options,
     headers: {
       Authorization: `Bearer ${localStorage.getItem('taller_token') || ''}`,

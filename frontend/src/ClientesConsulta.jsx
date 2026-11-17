@@ -3,10 +3,11 @@ import { ArrowLeft, CarFront, Eye, Pencil, RotateCcw, Search, UserPlus, UserRoun
 import './clientes-consulta.css';
 import ClienteEdicionModal from './ClienteEdicionModal';
 import ClienteEstadoModal from './ClienteEstadoModal';
+import { API_URL } from './api';
 
 /** Ejecuta GET privado; parámetros URL y signal; devuelve JSON o lanza Error HTTP. */
 async function consultar(url, signal) {
-  const response = await fetch(url, { signal, headers: { Authorization: `Bearer ${localStorage.getItem('taller_token')}` } });
+  const response = await fetch(`${API_URL}${url}`, { signal, headers: { Authorization: `Bearer ${localStorage.getItem('taller_token')}` } });
   if (!response.ok) throw new Error(response.status === 403 ? 'No tienes permiso para consultar clientes.' :
     response.status === 404 ? 'Cliente no encontrado.' : 'No se pudieron cargar los clientes. Intenta nuevamente.');
   return response.json();
@@ -20,7 +21,7 @@ function FotoCliente({ id, nombre, tallerId }) {
     /** Carga bytes con Bearer; devuelve Promise<void>; presenta iniciales ante un fallo. */
     async function cargar() {
       try {
-        const response = await fetch(`/api/clientes/${id}/fotografia${tallerId ? `?tallerId=${tallerId}` : ''}`, {
+        const response = await fetch(`${API_URL}/api/clientes/${id}/fotografia${tallerId ? `?tallerId=${tallerId}` : ''}`, {
           signal: controller.signal, headers: { Authorization: `Bearer ${localStorage.getItem('taller_token')}` },
         });
         if (!response.ok) return;
