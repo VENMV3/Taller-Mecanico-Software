@@ -3,6 +3,8 @@ frontend/dist/
 backend/target/
 logs/
 .env
+frontend/.env*
+!frontend/.env.example
 .vite/
 backend/uploads/
 data/sepomex/*.txt
