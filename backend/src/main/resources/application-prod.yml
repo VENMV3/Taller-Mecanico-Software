@@ -1,0 +1,18 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+  flyway:
+    baseline-on-migrate: false
+
+app:
+  jwt-secret: ${JWT_SECRET}

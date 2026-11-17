@@ -5,6 +5,7 @@ set -euo pipefail
 set -m
 
 RAIZ="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$RAIZ/.env"
 COMPOSE="/home/venmve/mis-contenedores/docker-compose.yml"
 MAVEN="/home/venmve/.local/share/JetBrains/Toolbox/apps/intellij-idea/plugins/maven-plugin/lib/maven3/bin/mvn"
 LOGS="$RAIZ/logs"
@@ -13,6 +14,15 @@ PID_FRONTEND="$LOGS/frontend.pid"
 JAR_BACKEND="$RAIZ/backend/target/portal-taller-1.0.0.jar"
 JDK21="/usr/lib/jvm/java-21-openjdk"
 API_PORT="${TALLER_API_PORT:-8080}"
+
+if [[ -f "$ENV_FILE" ]]; then
+  # .env es local e ignorado por Git; exporta sus variables para API y portal.
+  set -a
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  set +a
+fi
+export SPRING_PROFILES_ACTIVE="${SPRING_PROFILES_ACTIVE:-dev}"
 
 mkdir -p "$LOGS"
 

@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: test
+
+app:
+  jwt-expiration-ms: 86400000

@@ -1,0 +1,17 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQLDialect
+
+app:
+  jwt-secret: ${JWT_SECRET}
+  technical-account-password: ${DEV_TECHNICAL_ACCOUNT_PASSWORD}
