@@ -11,11 +11,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /** Siembra manual e idempotente de identidades demo con el codificador BCrypt del portal. */
 @Component
+@Profile({"dev", "demo"})
 @ConditionalOnProperty(name = "app.demo-users.seed", havingValue = "true")
 public class DemoUsersRunner implements ApplicationRunner {
     private final UserRepository users;

@@ -20,6 +20,9 @@ spring:
     max-lifetime: 300000
     connection-timeout: 30000
 
+server:
+  forward-headers-strategy: native
+
 management:
   endpoints:
     web:

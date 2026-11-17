@@ -29,8 +29,12 @@ En `dev` y `prod` se requieren las siguientes variables; los valores mostrados s
 | `DB_PASSWORD` | Contraseña de MySQL | `example-local-db-password` |
 | `JWT_SECRET` | Material de firma JWT (mínimo 32 caracteres) | `example-local-jwt-signing-key-change-me-1234567890` |
 | `DEV_TECHNICAL_ACCOUNT_PASSWORD` | Contraseña de la cuenta técnica, solo `dev` | `example-technical-account-password` |
+| `BOOTSTRAP_ADMIN_EMAIL` | Correo del primer administrador del sistema | `admin@example.invalid` |
+| `BOOTSTRAP_ADMIN_PASSWORD` | Contraseña del primer administrador (mínimo 12 caracteres) | `example-bootstrap-password` |
 
 `prod` no tiene valores predeterminados para las credenciales: si falta `DB_URL`, `DB_USER`, `DB_PASSWORD` o `JWT_SECRET`, Spring Boot detiene el arranque e identifica la variable faltante. En producción Hibernate valida el esquema (`ddl-auto=validate`) y Flyway es la única herramienta que lo gestiona. El perfil `test` usa H2 en memoria y no requiere una base de datos externa.
+
+Para crear el primer administrador en producción, define `BOOTSTRAP_ADMIN_EMAIL` y `BOOTSTRAP_ADMIN_PASSWORD` durante un único arranque. El sistema solo crea la cuenta si todavía no existe un administrador del sistema. Borra ambas variables inmediatamente después del primer arranque.
 
 ## API
 
